@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
     IconSearch,
     IconBell,
@@ -8,7 +8,7 @@ import {
 } from '@tabler/icons-react'
 import { cn } from '../lib/utils'
 import { useTheme } from '@/hooks/useTheme'
-import { IconSun, IconMoon, IconSettings } from "@tabler/icons-react"
+import { IconSun, IconMoon } from "@tabler/icons-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useAuth } from '@/context/AuthContext'
 
 /* ─── Route → readable name mapping ─────────────────────────── */
 const ROUTE_LABELS = {
@@ -148,15 +149,23 @@ const USER_MENU_GROUPS = [
 
 /* ─── User Avatar ────────────────────────────────────────────── */
 export function UserProfileDropdown() {
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login', { replace: true })
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-2.5 py-1.5 shadow-sm transition-colors hover:bg-accent cursor-pointer">
         <div className="h-7 w-7 rounded-full bg-linear-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-sm">
-          JD
+          {user?.initials ?? 'U'}
         </div>
         <div className="hidden md:block text-left leading-tight">
-          <p className="text-xs font-semibold text-foreground">Jane Doe</p>
-          <p className="text-[10px] text-muted-foreground">Admin</p>
+          <p className="text-xs font-semibold text-foreground">{user?.name ?? 'User'}</p>
+          <p className="text-[10px] text-muted-foreground">{user?.role ?? 'Member'}</p>
         </div>
         <IconChevronDown size={14} className="text-muted-foreground shrink-0" strokeWidth={2} />
       </DropdownMenuTrigger>
@@ -168,7 +177,12 @@ export function UserProfileDropdown() {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               {group.items.map(({ label, disabled, className }) => (
-                <DropdownMenuItem key={label} disabled={disabled} className={className}>
+                <DropdownMenuItem
+                  key={label}
+                  disabled={disabled}
+                  className={className}
+                  onClick={label === 'Log out' ? handleLogout : undefined}
+                >
                   {label}
                 </DropdownMenuItem>
               ))}

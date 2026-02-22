@@ -1,5 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import AppLayout from '../layouts/AppLayout'
+import ProtectedRoute from '../components/ProtectedRoute'
+import LoginPage from '../pages/LoginPage'
 import DashboardPage from '../pages/DashboardPage'
 import InventoryPage from '../pages/InventoryPage'
 import BillingPage from '../pages/BillingPage'
@@ -10,16 +12,25 @@ import SupportPage from '../pages/SupportPage'
 
 const router = createBrowserRouter([
     {
+        path: '/login',
+        element: <LoginPage />,
+    },
+    {
         path: '/',
-        element: <AppLayout />,
+        element: <ProtectedRoute />,
         children: [
-            { index: true, element: <DashboardPage /> },
-            { path: 'inventory', element: <InventoryPage /> },
-            { path: 'billing', element: <BillingPage /> },
-            { path: 'crm', element: <CrmPage /> },
-            { path: 'reports', element: <ReportsPage /> },
-            { path: 'settings', element: <SettingsPage /> },
-            { path: 'support', element: <SupportPage /> },
+            {
+                element: <AppLayout />,
+                children: [
+                    { index: true, element: <DashboardPage /> },
+                    { path: 'inventory', element: <InventoryPage /> },
+                    { path: 'billing', element: <BillingPage /> },
+                    { path: 'crm', element: <CrmPage /> },
+                    { path: 'reports', element: <ReportsPage /> },
+                    { path: 'settings', element: <SettingsPage /> },
+                    { path: 'support', element: <SupportPage /> },
+                ],
+            },
         ],
     },
 ])
