@@ -171,7 +171,17 @@ export function UserProfileDropdown() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="w-56" align="end">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuLabel className="p-0">
+          <div className="flex items-center gap-3 px-2 py-2.5">
+            <div className="h-8 w-8 rounded-full bg-linear-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-sm">
+              {user?.initials ?? 'U'}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold text-foreground truncate">{user?.name ?? 'User'}</p>
+              <p className="text-[10px] font-normal text-muted-foreground truncate">{user?.email ?? ''}</p>
+            </div>
+          </div>
+        </DropdownMenuLabel>
         {USER_MENU_GROUPS.map((group, gi) => (
           <div key={gi}>
             <DropdownMenuSeparator />

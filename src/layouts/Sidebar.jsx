@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import {
     IconLayoutDashboard,
     IconPackage,
@@ -14,6 +14,16 @@ import {
     IconX,
 } from '@tabler/icons-react'
 import { cn } from '../lib/utils'
+import { useAuth } from '../context/AuthContext'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu'
 
 /* ─── Nav Definitions ──────────────────────────────────────── */
 const MAIN_NAV = [
@@ -79,6 +89,28 @@ function SectionLabel({ children, isExpanded }) {
     )
 }
 
+/* ─── User menu groups ───────────────────────────────────────── */
+const USER_MENU_GROUPS = [
+    {
+        items: [
+            { label: 'Profile' },
+            { label: 'Billing' },
+            { label: 'Settings' },
+        ],
+    },
+    {
+        items: [
+            { label: 'Support' },
+            { label: 'API', disabled: true },
+        ],
+    },
+    {
+        items: [
+            { label: 'Log out', className: 'text-destructive' },
+        ],
+    },
+]
+
 /* ─── Sidebar ────────────────────────────────────────────────── */
 export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
     // Desktop: expanded = not-collapsed. Mobile overlay: always expanded.
@@ -86,6 +118,14 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
 
     // Logo area hovered separately for icon swap
     const [logoHovered, setLogoHovered] = useState(false)
+
+    const { user, logout } = useAuth()
+    const navigate = useNavigate()
+
+    const handleLogout = () => {
+        logout()
+        navigate('/login', { replace: true })
+    }
 
     return (
         <>
@@ -183,32 +223,69 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                     </div>
                 </nav>
 
-                {/* ── Bottom — Switch Tenant ─────────────────── */}
+                {/* ── Bottom — User profile ──────────────────── */}
                 <div className="border-t border-sidebar-border p-3">
-                    <button
-                        className={cn(
-                            'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground',
-                            !isExpanded && 'justify-center px-2'
-                        )}
-                        type="button"
-                        title={!isExpanded ? 'Switch Tenant' : undefined}
-                        /* Stop bubbling so clicking the tenant button doesn't also expand sidebar */
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        {/* Tenant avatar */}
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-slate-600 text-[11px] font-bold text-white">
-                            TS
-                        </div>
-                        {isExpanded && (
-                            <>
-                                <div className="min-w-0 flex-1 text-left leading-tight">
-                                    <p className="truncate text-xs font-semibold text-sidebar-foreground">Switch Tenant</p>
-                                    <p className="truncate text-[10px] text-muted-foreground">Current: Acme</p>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button
+                                type="button"
+                                title={!isExpanded ? user?.name ?? 'Account' : undefined}
+                                onClick={(e) => e.stopPropagation()}
+                                className={cn(
+                                    'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground',
+                                    !isExpanded && 'justify-center px-2'
+                                )}
+                            >
+                                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-violet-400 to-indigo-600 text-[11px] font-bold text-white shadow-sm">
+                                    {user?.initials ?? 'U'}
                                 </div>
-                                <IconChevronDown size={15} className="shrink-0 text-muted-foreground" />
-                            </>
-                        )}
-                    </button>
+                                {isExpanded && (
+                                    <>
+                                        <div className="min-w-0 flex-1 text-left leading-tight">
+                                            <p className="truncate text-xs font-semibold text-sidebar-foreground">
+                                                {user?.name ?? 'User'}
+                                            </p>
+                                            <p className="truncate text-[10px] text-muted-foreground">
+                                                {user?.role ?? 'Member'}
+                                            </p>
+                                        </div>
+                                        <IconChevronDown size={15} className="shrink-0 text-muted-foreground" />
+                                    </>
+                                )}
+                            </button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent className="w-45" align="start" side="top" sideOffset={8}>
+                            <DropdownMenuLabel className="p-0">
+                                <div className="flex items-center gap-3 px-2 py-2.5">
+                                    <div className="h-8 w-8 rounded-full bg-linear-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-sm">
+                                        {user?.initials ?? 'U'}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-xs font-semibold text-foreground truncate">{user?.name ?? 'User'}</p>
+                                        <p className="text-[10px] font-normal text-muted-foreground truncate">{user?.email ?? ''}</p>
+                                    </div>
+                                </div>
+                            </DropdownMenuLabel>
+                            {USER_MENU_GROUPS.map((group, gi) => (
+                                <div key={gi}>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuGroup>
+                                        {group.items.map(({ label, disabled, className }) => (
+                                            <DropdownMenuItem
+                                                key={label}
+                                                disabled={disabled}
+                                                className={className}
+                                                onClick={label === 'Log out' ? handleLogout : undefined}
+                                            >
+                                                {label}
+                                            </DropdownMenuItem>
+                                        ))}
+                                    </DropdownMenuGroup>
+                                </div>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </aside>
         </>
