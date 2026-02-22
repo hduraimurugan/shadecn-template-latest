@@ -226,36 +226,29 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                 {/* ── Bottom — User profile ──────────────────── */}
                 <div className="border-t border-sidebar-border p-3">
                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <button
-                                type="button"
-                                title={!isExpanded ? user?.name ?? 'Account' : undefined}
-                                onClick={(e) => e.stopPropagation()}
-                                className={cn(
-                                    'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground',
-                                    !isExpanded && 'justify-center px-2'
-                                )}
-                            >
-                                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-violet-400 to-indigo-600 text-[11px] font-bold text-white shadow-sm">
-                                    {user?.initials ?? 'U'}
-                                </div>
-                                {isExpanded && (
-                                    <>
-                                        <div className="min-w-0 flex-1 text-left leading-tight">
-                                            <p className="truncate text-xs font-semibold text-sidebar-foreground">
-                                                {user?.name ?? 'User'}
-                                            </p>
-                                            <p className="truncate text-[10px] text-muted-foreground">
-                                                {user?.role ?? 'Member'}
-                                            </p>
-                                        </div>
-                                        <IconChevronDown size={15} className="shrink-0 text-muted-foreground" />
-                                    </>
-                                )}
-                            </button>
+                        <DropdownMenuTrigger
+                            onClick={(e) => e.stopPropagation()}
+                            title={!isExpanded ? (user?.name ?? 'Account') : undefined}
+                            className={cn(
+                                'flex w-full items-center gap-2.5 rounded-lg border border-sidebar-border bg-sidebar-accent/40 px-2.5 py-1.5 shadow-sm transition-colors hover:bg-sidebar-accent cursor-pointer focus-visible:outline-none',
+                                !isExpanded && 'justify-center px-2'
+                            )}
+                        >
+                            <div className="h-7 w-7 rounded-full bg-linear-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-sm">
+                                {user?.initials ?? 'U'}
+                            </div>
+                            {isExpanded && (
+                                <>
+                                    <div className="min-w-0 flex-1 text-left leading-tight">
+                                        <p className="truncate text-xs font-semibold text-sidebar-foreground">{user?.name ?? 'User'}</p>
+                                        <p className="truncate text-[10px] text-muted-foreground">{user?.role ?? 'Member'}</p>
+                                    </div>
+                                    <IconChevronDown size={14} className="text-muted-foreground shrink-0" strokeWidth={2} />
+                                </>
+                            )}
                         </DropdownMenuTrigger>
 
-                        <DropdownMenuContent className="w-45" align="start" side="top" sideOffset={8}>
+                        <DropdownMenuContent className="w-56" align="start" side="top" sideOffset={8}>
                             <DropdownMenuLabel className="p-0">
                                 <div className="flex items-center gap-3 px-2 py-2.5">
                                     <div className="h-8 w-8 rounded-full bg-linear-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-sm">
