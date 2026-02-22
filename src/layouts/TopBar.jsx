@@ -112,20 +112,15 @@ const USER_MENU_GROUPS = [
 export function UserProfileDropdown() {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          type="button"
-          className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-2.5 py-1.5 shadow-sm transition-colors hover:bg-accent"
-        >
-          <div className="h-7 w-7 rounded-full bg-linear-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-sm">
-            JD
-          </div>
-          <div className="hidden md:block text-left leading-tight">
-            <p className="text-xs font-semibold text-foreground">Jane Doe</p>
-            <p className="text-[10px] text-muted-foreground">Admin</p>
-          </div>
-          <IconChevronDown size={14} className="text-muted-foreground shrink-0" strokeWidth={2} />
-        </button>
+      <DropdownMenuTrigger className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-2.5 py-1.5 shadow-sm transition-colors hover:bg-accent cursor-pointer">
+        <div className="h-7 w-7 rounded-full bg-linear-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-sm">
+          JD
+        </div>
+        <div className="hidden md:block text-left leading-tight">
+          <p className="text-xs font-semibold text-foreground">Jane Doe</p>
+          <p className="text-[10px] text-muted-foreground">Admin</p>
+        </div>
+        <IconChevronDown size={14} className="text-muted-foreground shrink-0" strokeWidth={2} />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="w-56" align="end">
