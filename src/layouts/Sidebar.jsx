@@ -36,6 +36,8 @@ function NavItem({ to, icon: Icon, label, end, isExpanded }) {
             to={to}
             end={end}
             title={!isExpanded ? label : undefined}
+            /* Stop bubbling so clicking an icon navigates and doesn't expand sidebar */
+            onClick={(e) => e.stopPropagation()}
             className={({ isActive }) =>
                 cn(
                     'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
@@ -165,11 +167,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                 {isExpanded && <div className="mx-4 h-px bg-white/8" />}
 
                 {/* ── Navigation ───────────────────────────── */}
-                <nav
-                    /* Stop click bubbling from nav so clicking an icon doesn't re-trigger expand */
-                    onClick={(e) => e.stopPropagation()}
-                    className="flex-1 overflow-y-auto px-2 pb-2 scrollbar-none"
-                >
+                <nav className="flex-1 overflow-y-auto px-2 pb-2 scrollbar-none">
                     <SectionLabel isExpanded={isExpanded}>Main Menu</SectionLabel>
                     <div className="space-y-0.5">
                         {MAIN_NAV.map((item) => (
@@ -186,11 +184,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                 </nav>
 
                 {/* ── Bottom — Switch Tenant ─────────────────── */}
-                <div
-                    /* Stop click bubbling from bottom section too */
-                    onClick={(e) => e.stopPropagation()}
-                    className="border-t border-white/8 p-3"
-                >
+                <div className="border-t border-white/8 p-3">
                     <button
                         className={cn(
                             'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-100',
@@ -198,6 +192,8 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                         )}
                         type="button"
                         title={!isExpanded ? 'Switch Tenant' : undefined}
+                        /* Stop bubbling so clicking the tenant button doesn't also expand sidebar */
+                        onClick={(e) => e.stopPropagation()}
                     >
                         {/* Tenant avatar */}
                         <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-slate-600 text-[11px] font-bold text-white">
