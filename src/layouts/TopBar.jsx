@@ -4,6 +4,7 @@ import {
     IconBell,
     IconChevronDown,
     IconChevronRight,
+    IconMenu2,
 } from '@tabler/icons-react'
 import { cn } from '../lib/utils'
 import { useTheme } from '@/hooks/useTheme'
@@ -112,13 +113,22 @@ function ThemeSwitch() {
 }
 
 /* ─── TopBar ─────────────────────────────────────────────────── */
-export default function TopBar() {
+export default function TopBar({ onMobileMenuClick }) {
     const { pathname } = useLocation()
 
     return (
-        <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b border-slate-200 bg-white px-6 dark:bg-slate-900 dark:border-slate-800">
-            {/* Left — Breadcrumb */}
-            <div className="shrink-0">
+        <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 md:px-6 dark:bg-slate-900 dark:border-slate-800">
+            {/* Left — Mobile hamburger + Breadcrumb */}
+            <div className="flex shrink-0 items-center gap-3">
+                {/* Hamburger — mobile only */}
+                <button
+                    type="button"
+                    onClick={onMobileMenuClick}
+                    className="flex md:hidden h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                    aria-label="Open sidebar"
+                >
+                    <IconMenu2 size={20} strokeWidth={1.75} />
+                </button>
                 <Breadcrumb pathname={pathname} />
             </div>
 
@@ -129,7 +139,7 @@ export default function TopBar() {
 
             {/* Right — actions */}
             <div className="flex shrink-0 items-center gap-2">
-                <ThemeSwitch />
+                {/* <ThemeSwitch /> */}
                 <BellButton />
                 <UserProfile />
             </div>
