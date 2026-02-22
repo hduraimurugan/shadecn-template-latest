@@ -1,13 +1,21 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 
 export default function AppLayout() {
-    // Desktop: collapsed (icon-only) vs expanded
-    const [collapsed, setCollapsed] = useState(false)
-    // Mobile: sidebar overlay open/closed
+// 1. Initialize state from localStorage (or default to false)
+    const [collapsed, setCollapsed] = useState(() => {
+        const saved = localStorage.getItem('sidebar-collapsed')
+        return saved ? JSON.parse(saved) : false
+    })
+
     const [mobileOpen, setMobileOpen] = useState(false)
+
+    // 2. Sync state to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('sidebar-collapsed', JSON.stringify(collapsed))
+    }, [collapsed])
 
     return (
         /*
