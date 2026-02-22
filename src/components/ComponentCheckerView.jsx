@@ -1,37 +1,27 @@
-import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { IconSun, IconMoon, IconSettings } from "@tabler/icons-react"
+import { useTheme } from "@/hooks/useTheme"
 
 const ComponentCheckerView = () => {
-  const [isDark, setIsDark] = useState(false)
-
-  // Sync state with the HTML class
-  useEffect(() => {
-    const root = window.document.documentElement
-    if (isDark) {
-      root.classList.add('dark')
-    } else {
-      root.classList.remove('dark')
-    }
-  }, [isDark])
+  const { isDark, toggleTheme } = useTheme()
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
       <div className="p-10 space-y-8 max-w-4xl mx-auto">
-        
+
         {/* Header with Theme Toggle */}
         <header className="flex justify-between items-center border-b pb-4">
           <div>
             <h1 className="text-3xl font-bold font-outfit">Shadcn Component Check</h1>
             <p className="text-muted-foreground">Verifying Zinc + Green Theme (Tailwind v4)</p>
           </div>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={() => setIsDark(!isDark)}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleTheme}
             className="rounded-full"
           >
             {isDark ? <IconSun size={20} /> : <IconMoon size={20} />}
@@ -40,20 +30,20 @@ const ComponentCheckerView = () => {
 
         {/* Theme Status Card */}
         <section>
-           <Card className="border-primary/20">
-              <CardHeader>
-                <CardTitle className="text-primary">Theme Controller Active</CardTitle>
-                <CardDescription>
-                  Current mode: <span className="font-bold">{isDark ? "Dark" : "Light"}</span>
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">
-                  This component is using <strong>OKLCH</strong> colors defined in your <code>App.css</code>. 
-                  When you toggle the switch, we add the <code>.dark</code> class to the document root.
-                </p>
-              </CardContent>
-           </Card>
+          <Card className="border-primary/20">
+            <CardHeader>
+              <CardTitle className="text-primary">Theme Controller Active</CardTitle>
+              <CardDescription>
+                Current mode: <span className="font-bold">{isDark ? "Dark" : "Light"}</span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm">
+                This component is using <strong>OKLCH</strong> colors defined in your <code>App.css</code>.
+                When you toggle the switch, we add the <code>.dark</code> class to the document root.
+              </p>
+            </CardContent>
+          </Card>
         </section>
 
         {/* Base Elements */}
