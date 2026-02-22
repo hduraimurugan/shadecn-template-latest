@@ -4,7 +4,7 @@ import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 
 export default function AppLayout() {
-// 1. Initialize state from localStorage (or default to false)
+    // 1. Initialize state from localStorage (or default to false)
     const [collapsed, setCollapsed] = useState(() => {
         const saved = localStorage.getItem('sidebar-collapsed')
         return saved ? JSON.parse(saved) : false
