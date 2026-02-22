@@ -170,7 +170,7 @@ export function UserProfileDropdown() {
         <IconChevronDown size={14} className="text-muted-foreground shrink-0" strokeWidth={2} />
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-56" align="end">
+      <DropdownMenuContent className="w-50" align="end">
         <DropdownMenuLabel className="p-0">
           <div className="flex items-center gap-3 px-2 py-2.5">
             <div className="h-8 w-8 rounded-full bg-linear-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-sm">
