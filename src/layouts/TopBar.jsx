@@ -70,19 +70,57 @@ function SearchBar() {
     )
 }
 
+/* ─── Notification config ────────────────────────────────────── */
+const NOTIFICATIONS = [
+  { id: 1, title: 'New order received', desc: 'Order #1042 placed by Alex M.', time: '2m ago', unread: true },
+  { id: 2, title: 'Invoice overdue', desc: 'Invoice #INV-0088 is 3 days past due.', time: '1h ago', unread: true },
+  { id: 3, title: 'Low stock alert', desc: 'Item "Wireless Headset" has 2 units left.', time: '3h ago', unread: false },
+  { id: 4, title: 'New support ticket', desc: 'Ticket #509 opened by Sara K.', time: 'Yesterday', unread: false },
+]
+
 /* ─── Notification bell ──────────────────────────────────────── */
 function BellButton() {
-    return (
-        <button
-            type="button"
-            className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-            aria-label="Notifications"
-        >
-            <IconBell size={17} strokeWidth={1.75} />
-            {/* Red dot indicator */}
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-card" />
-        </button>
-    )
+  const unreadCount = NOTIFICATIONS.filter(n => n.unread).length
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer">
+        <IconBell size={17} strokeWidth={1.75} />
+        {unreadCount > 0 && (
+          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-card" />
+        )}
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent className="w-80" align="end">
+        <div className="flex items-center justify-between px-1.5 py-1">
+          <DropdownMenuLabel className="p-0">Notifications</DropdownMenuLabel>
+          {unreadCount > 0 && (
+            <span className="text-[10px] font-medium text-primary bg-primary/10 rounded-full px-2 py-0.5">
+              {unreadCount} new
+            </span>
+          )}
+        </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          {NOTIFICATIONS.map(({ id, title, desc, time, unread }) => (
+            <DropdownMenuItem key={id} className="flex flex-col items-start gap-0.5 py-2.5 cursor-pointer">
+              <div className="flex w-full items-center justify-between gap-2">
+                <span className={cn('text-xs font-semibold', unread ? 'text-foreground' : 'text-muted-foreground')}>
+                  {title}
+                </span>
+                <span className="text-[10px] text-muted-foreground shrink-0">{time}</span>
+              </div>
+              <span className="text-[11px] text-muted-foreground leading-snug">{desc}</span>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="justify-center text-xs text-primary font-medium py-1.5">
+          View all notifications
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
 }
 
 /* ─── User profile menu config ───────────────────────────────── */
