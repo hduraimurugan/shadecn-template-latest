@@ -230,11 +230,11 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                             onClick={(e) => e.stopPropagation()}
                             title={!isExpanded ? (user?.name ?? 'Account') : undefined}
                             className={cn(
-                                'flex w-full items-center gap-2.5 rounded-lg border border-sidebar-border bg-sidebar-accent/40 px-2.5 py-1.5 shadow-sm transition-colors hover:bg-sidebar-accent cursor-pointer focus-visible:outline-none',
-                                !isExpanded && 'justify-center px-2'
+                                'flex w-full items-center gap-2.5 border border-sidebar-border  px-2.5 py-1.5 shadow-sm transition-colors  cursor-pointer focus-visible:outline-none',
+                                isExpanded ? 'rounded-lg bg-sidebar-accent/40 hover:bg-sidebar-accent' : ' border-0 justify-center px-2'
                             )}
                         >
-                            <div className="h-7 w-7 rounded-full bg-linear-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-sm">
+                            <div className="h-7 w-7 rounded-full bg-linear-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-sm ring-2 ring-sidebar-border ring-offset-1 ring-offset-sidebar-accent/40">
                                 {user?.initials ?? 'U'}
                             </div>
                             {isExpanded && (
