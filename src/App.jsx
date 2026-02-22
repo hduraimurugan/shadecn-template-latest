@@ -1,10 +1,8 @@
-import './App.css'
-import ComponentCheckerView from './components/ComponentCheckerView'
+import { RouterProvider } from 'react-router-dom'
+import router from './routes'
 
 function App() {
-  return (
-      <ComponentCheckerView />
-  )
+  return <RouterProvider router={router} />
 }
 
 export default App

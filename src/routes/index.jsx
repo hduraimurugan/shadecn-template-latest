@@ -1,0 +1,27 @@
+import { createBrowserRouter } from 'react-router-dom'
+import AppLayout from '../layouts/AppLayout'
+import DashboardPage from '../pages/DashboardPage'
+import InventoryPage from '../pages/InventoryPage'
+import BillingPage from '../pages/BillingPage'
+import CrmPage from '../pages/CrmPage'
+import ReportsPage from '../pages/ReportsPage'
+import SettingsPage from '../pages/SettingsPage'
+import SupportPage from '../pages/SupportPage'
+
+const router = createBrowserRouter([
+    {
+        path: '/',
+        element: <AppLayout />,
+        children: [
+            { index: true, element: <DashboardPage /> },
+            { path: 'inventory', element: <InventoryPage /> },
+            { path: 'billing', element: <BillingPage /> },
+            { path: 'crm', element: <CrmPage /> },
+            { path: 'reports', element: <ReportsPage /> },
+            { path: 'settings', element: <SettingsPage /> },
+            { path: 'support', element: <SupportPage /> },
+        ],
+    },
+])
+
+export default router
