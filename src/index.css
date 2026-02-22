@@ -6,3 +6,51 @@ body,
   height: 100%;
   overflow: hidden;
 }
+
+/* ── Themed scrollbar ──────────────────────────────────────── */
+
+/* Width */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 999px;
+}
+
+/* Thumb */
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 999px;
+  transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;
+}
+
+/* Dark mode */
+.dark ::-webkit-scrollbar-track {
+  background: #1c2333;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+.dark * {
+  scrollbar-color: #334155 #1c2333;
+}

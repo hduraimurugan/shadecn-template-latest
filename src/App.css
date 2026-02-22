@@ -127,3 +127,55 @@
     @apply font-sans;
   }
 }
+
+/* ── Themed scrollbar ─────────────────────────────────────────
+   Webkit (Chrome, Edge, Safari) — thin pill scrollbar
+   matching the dark navy / blue-600 design system.
+──────────────────────────────────────────────────────────────── */
+
+/* Width */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Track — light mode */
+::-webkit-scrollbar-track {
+  background: #f1f5f9; /* slate-100 */
+  border-radius: 999px;
+}
+
+/* Thumb — light mode */
+::-webkit-scrollbar-thumb {
+  background: #94a3b8; /* slate-400 */
+  border-radius: 999px;
+  transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2563eb; /* blue-600 */
+}
+
+/* Dark mode overrides */
+.dark ::-webkit-scrollbar-track {
+  background: #1c2333; /* sidebar navy */
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155; /* slate-700 */
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #2563eb; /* blue-600 */
+}
+
+/* Corner where vertical + horizontal scrollbars meet */
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox — thin scrollbar with matching colors */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+.dark * {
+  scrollbar-color: #334155 #1c2333;
+}
