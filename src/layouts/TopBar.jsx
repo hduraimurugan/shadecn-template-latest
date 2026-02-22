@@ -6,6 +6,9 @@ import {
     IconChevronRight,
 } from '@tabler/icons-react'
 import { cn } from '../lib/utils'
+import { useTheme } from '@/hooks/useTheme'
+import { IconSun, IconMoon, IconSettings } from "@tabler/icons-react"
+import { Button } from "@/components/ui/button"
 
 /* ─── Route → readable name mapping ─────────────────────────── */
 const ROUTE_LABELS = {
@@ -94,6 +97,20 @@ function UserProfile() {
     )
 }
 
+function ThemeSwitch() {
+    const { isDark, toggleTheme } = useTheme()
+    return (
+        <button
+            type="button"
+            onClick={toggleTheme}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-700 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-700"
+            aria-label="Toggle theme"
+        >
+            {isDark ? <IconSun size={17} strokeWidth={1.75} /> : <IconMoon size={17} strokeWidth={1.75} />}
+        </button>
+    )
+}
+
 /* ─── TopBar ─────────────────────────────────────────────────── */
 export default function TopBar() {
     const { pathname } = useLocation()
@@ -112,6 +129,7 @@ export default function TopBar() {
 
             {/* Right — actions */}
             <div className="flex shrink-0 items-center gap-2">
+                <ThemeSwitch />
                 <BellButton />
                 <UserProfile />
             </div>
