@@ -248,14 +248,29 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                             )}
                         </DropdownMenuTrigger>
 
-                        <DropdownMenuContent className="w-56" align="start" side="top" sideOffset={8}>
+                        <DropdownMenuContent
+                            className="w-47"
+                            align="start"
+                            side="top"
+                            sideOffset={8}
+                            style={{
+                                '--popover':            'oklch(0.260 0.042 264)',
+                                '--popover-foreground': 'oklch(0.968 0.007 247.896)',
+                                '--foreground':         'oklch(0.968 0.007 247.896)',
+                                '--accent':             'oklch(1 0 0 / 8%)',
+                                '--accent-foreground':  'oklch(0.968 0.007 247.896)',
+                                '--border':             'oklch(1 0 0 / 10%)',
+                                '--muted-foreground':   'oklch(0.704 0.04 256.788)',
+                                '--destructive':        'oklch(0.704 0.191 22.216)',
+                            }}
+                        >
                             <DropdownMenuLabel className="p-0">
                                 <div className="flex items-center gap-3 px-2 py-2.5">
                                     <div className="h-8 w-8 rounded-full bg-linear-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-sm">
                                         {user?.initials ?? 'U'}
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <p className="text-xs font-semibold text-foreground truncate">{user?.name ?? 'User'}</p>
+                                        <p className="text-xs font-semibold text-white truncate">{user?.name ?? 'User'}</p>
                                         <p className="text-[10px] font-normal text-muted-foreground truncate">{user?.email ?? ''}</p>
                                     </div>
                                 </div>
