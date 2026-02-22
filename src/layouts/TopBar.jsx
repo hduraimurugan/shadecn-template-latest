@@ -133,7 +133,7 @@ export default function TopBar({ onMobileMenuClick }) {
             </div>
 
             {/* Center — Search */}
-            <div className="flex flex-1 items-center justify-center px-4">
+            <div className="md:flex hidden flex-1 items-center justify-center px-4">
                 <SearchBar />
             </div>
 
