@@ -43,8 +43,8 @@ function NavItem({ to, icon: Icon, label, end, isExpanded }) {
                     'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
                     !isExpanded ? 'justify-center px-2' : '',
                     isActive
-                        ? 'bg-blue-600 text-white shadow-sm'
-                        : 'text-slate-400 hover:bg-white/5 hover:text-slate-100'
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
                 )
             }
         >
@@ -55,7 +55,7 @@ function NavItem({ to, icon: Icon, label, end, isExpanded }) {
                         strokeWidth={1.75}
                         className={cn(
                             'shrink-0 transition-colors',
-                            isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'
+                            isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-sidebar-foreground'
                         )}
                     />
                     {isExpanded && (
@@ -73,7 +73,7 @@ function SectionLabel({ children, isExpanded }) {
         return <div className="mx-auto my-3 h-px w-6 bg-white/10" />
     }
     return (
-        <p className="mb-1 mt-5 px-3 text-[10px] font-semibold uppercase tracking-widest text-slate-500 select-none">
+        <p className="mb-1 mt-5 px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground select-none">
             {children}
         </p>
     )
@@ -125,7 +125,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                         <div
                             onMouseEnter={() => setLogoHovered(true)}
                             onMouseLeave={() => setLogoHovered(false)}
-                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-xs font-bold text-white shadow-md transition-all duration-150"
+                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground shadow-md transition-all duration-150"
                         >
                             {collapsed && logoHovered ? (
                                 <IconLayoutSidebar size={16} strokeWidth={2} />
@@ -135,8 +135,8 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                         </div>
                         {isExpanded && (
                             <div className="min-w-0 leading-tight">
-                                <p className="truncate text-sm font-semibold text-white">Durai Corp</p>
-                                <p className="truncate text-[11px] text-slate-400">Admin Panel</p>
+                                <p className="truncate text-sm font-semibold text-sidebar-foreground">Durai Corp</p>
+                                <p className="truncate text-[11px] text-muted-foreground">Admin Panel</p>
                             </div>
                         )}
                     </div>
@@ -147,7 +147,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                             type="button"
                             onClick={(e) => { e.stopPropagation(); onToggle(); }}
                             title="Collapse sidebar"
-                            className="hidden md:flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-white/10 hover:text-slate-100"
+                            className="hidden md:flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/10 hover:text-sidebar-foreground"
                         >
                             <IconChevronLeft size={14} strokeWidth={2} />
                         </button>
@@ -157,14 +157,14 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                     <button
                         type="button"
                         onClick={onMobileClose}
-                        className="flex md:hidden h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-white/10 hover:text-slate-100"
+                        className="flex md:hidden h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/10 hover:text-sidebar-foreground"
                     >
                         <IconX size={16} strokeWidth={2} />
                     </button>
                 </div>
 
                 {/* ── Divider ───────────────────────────────── */}
-                {isExpanded && <div className="mx-4 h-px bg-white/8" />}
+                {isExpanded && <div className="mx-4 h-px bg-sidebar-border" />}
 
                 {/* ── Navigation ───────────────────────────── */}
                 <nav className="flex-1 overflow-y-auto px-2 pb-2 scrollbar-none">
@@ -184,10 +184,10 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                 </nav>
 
                 {/* ── Bottom — Switch Tenant ─────────────────── */}
-                <div className="border-t border-white/8 p-3">
+                <div className="border-t border-sidebar-border p-3">
                     <button
                         className={cn(
-                            'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-100',
+                            'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground',
                             !isExpanded && 'justify-center px-2'
                         )}
                         type="button"
@@ -202,10 +202,10 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                         {isExpanded && (
                             <>
                                 <div className="min-w-0 flex-1 text-left leading-tight">
-                                    <p className="truncate text-xs font-semibold text-slate-200">Switch Tenant</p>
-                                    <p className="truncate text-[10px] text-slate-500">Current: Acme</p>
+                                    <p className="truncate text-xs font-semibold text-sidebar-foreground">Switch Tenant</p>
+                                    <p className="truncate text-[10px] text-muted-foreground">Current: Acme</p>
                                 </div>
-                                <IconChevronDown size={15} className="shrink-0 text-slate-500" />
+                                <IconChevronDown size={15} className="shrink-0 text-muted-foreground" />
                             </>
                         )}
                     </button>

@@ -11,8 +11,8 @@ export default function DashboardPage() {
         <div className="space-y-6">
             {/* Page header */}
             <div>
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Dashboard</h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+                <p className="text-sm text-muted-foreground mt-0.5">
                     Welcome back — here's what's happening today.
                 </p>
             </div>
@@ -63,14 +63,14 @@ export default function DashboardPage() {
                 ].map((card) => (
                     <div
                         key={card.label}
-                        className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:bg-slate-900 dark:border-slate-800"
+                        className="rounded-xl border border-border bg-card p-5 shadow-sm"
                     >
                         <div className="flex items-start justify-between gap-3">
                             <div>
-                                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                                     {card.label}
                                 </p>
-                                <p className="mt-1.5 text-2xl font-bold text-slate-800 dark:text-slate-100">
+                                <p className="mt-1.5 text-2xl font-bold text-card-foreground">
                                     {card.value}
                                 </p>
                             </div>
@@ -88,17 +88,17 @@ export default function DashboardPage() {
                             {card.up === null && (
                                 <span className="font-semibold text-amber-600">{card.change}</span>
                             )}
-                            <span className="text-slate-400">{card.sub}</span>
+                            <span className="text-muted-foreground">{card.sub}</span>
                         </div>
                     </div>
                 ))}
             </div>
 
             {/* Placeholder for charts / tables */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:bg-slate-900 dark:border-slate-800 flex items-center justify-center h-64">
+            <div className="rounded-xl border border-border bg-card p-6 shadow-sm flex items-center justify-center h-64">
                 <div className="text-center space-y-2">
-                    <IconLayoutDashboard size={40} className="mx-auto text-slate-300 dark:text-slate-600" />
-                    <p className="text-sm text-slate-400 dark:text-slate-500">Sales trend chart &amp; recent invoices coming up next</p>
+                    <IconLayoutDashboard size={40} className="mx-auto text-muted-foreground/40" />
+                    <p className="text-sm text-muted-foreground">Sales trend chart &amp; recent invoices coming up next</p>
                 </div>
             </div>
         </div>
