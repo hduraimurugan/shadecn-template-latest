@@ -9,7 +9,15 @@ import {
 import { cn } from '../lib/utils'
 import { useTheme } from '@/hooks/useTheme'
 import { IconSun, IconMoon, IconSettings } from "@tabler/icons-react"
-import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 /* ─── Route → readable name mapping ─────────────────────────── */
 const ROUTE_LABELS = {
@@ -79,23 +87,44 @@ function BellButton() {
 }
 
 /* ─── User Avatar ────────────────────────────────────────────── */
-function UserProfile() {
-    return (
+export function UserProfileDropdown() {
+  return (
+    <DropdownMenu>
+      {/* 1. Wrap your custom button in the trigger with 'asChild' */}
+      <DropdownMenuTrigger asChild>
         <button
-            type="button"
-            className="flex items-center gap-2.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 shadow-sm transition-colors hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700"
+          type="button"
+          className="flex items-center gap-2.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 shadow-sm transition-colors hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700"
         >
-            {/* Avatar image / initials */}
-            <div className="h-7 w-7 rounded-full bg-gradient-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-sm">
-                JD
-            </div>
-            <div className="hidden md:block text-left leading-tight">
-                <p className="text-xs font-semibold text-slate-800 dark:text-slate-100">Jane Doe</p>
-                <p className="text-[10px] text-slate-400">Admin</p>
-            </div>
-            <IconChevronDown size={14} className="text-slate-400 shrink-0" strokeWidth={2} />
+          <div className="h-7 w-7 rounded-full bg-gradient-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-sm">
+            JD
+          </div>
+          <div className="hidden md:block text-left leading-tight">
+            <p className="text-xs font-semibold text-slate-800 dark:text-slate-100">Jane Doe</p>
+            <p className="text-[10px] text-slate-400">Admin</p>
+          </div>
+          <IconChevronDown size={14} className="text-slate-400 shrink-0" strokeWidth={2} />
         </button>
-    )
+      </DropdownMenuTrigger>
+
+      {/* 2. The menu that appears on click */}
+      <DropdownMenuContent className="w-56" align="end">
+        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem>Profile</DropdownMenuItem>
+          <DropdownMenuItem>Billing</DropdownMenuItem>
+          <DropdownMenuItem>Settings</DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>GitHub</DropdownMenuItem>
+        <DropdownMenuItem>Support</DropdownMenuItem>
+        <DropdownMenuItem disabled>API</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="text-red-600">Log out</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
 }
 
 function ThemeSwitch() {
@@ -139,9 +168,9 @@ export default function TopBar({ onMobileMenuClick }) {
 
             {/* Right — actions */}
             <div className="flex shrink-0 items-center gap-2">
-                {/* <ThemeSwitch /> */}
+                <ThemeSwitch />
                 <BellButton />
-                <UserProfile />
+                <UserProfileDropdown />
             </div>
         </header>
     )
