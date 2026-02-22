@@ -81,8 +81,8 @@ function SectionLabel({ children, isExpanded }) {
 
 /* ─── Sidebar ────────────────────────────────────────────────── */
 export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
-    // On desktop: expanded means not-collapsed
-    const isExpanded = !collapsed
+    // Desktop: expanded = not-collapsed. Mobile overlay: always expanded.
+    const isExpanded = !collapsed || mobileOpen
 
     // Logo area hovered separately for icon swap
     const [logoHovered, setLogoHovered] = useState(false)
