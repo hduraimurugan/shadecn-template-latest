@@ -80,7 +80,7 @@ export default function Sidebar() {
                     A
                 </div>
                 <div className="min-w-0 leading-tight">
-                    <p className="truncate text-sm font-semibold text-white">Acme Corp</p>
+                    <p className="truncate text-sm font-semibold text-white">Durai Corp</p>
                     <p className="truncate text-[11px] text-slate-400">Admin Panel</p>
                 </div>
             </div>
