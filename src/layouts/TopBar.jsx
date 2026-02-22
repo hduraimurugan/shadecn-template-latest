@@ -85,17 +85,39 @@ function BellButton() {
     )
 }
 
+/* ─── User profile menu config ───────────────────────────────── */
+const USER_MENU_GROUPS = [
+  {
+    items: [
+      { label: 'Profile' },
+      { label: 'Billing' },
+      { label: 'Settings' },
+    ],
+  },
+  {
+    items: [
+    //   { label: 'GitHub' },
+      { label: 'Support' },
+      { label: 'API', disabled: true },
+    ],
+  },
+  {
+    items: [
+      { label: 'Log out', className: 'text-destructive' },
+    ],
+  },
+]
+
 /* ─── User Avatar ────────────────────────────────────────────── */
 export function UserProfileDropdown() {
   return (
     <DropdownMenu>
-      {/* 1. Wrap your custom button in the trigger with 'asChild' */}
       <DropdownMenuTrigger asChild>
         <button
           type="button"
           className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-2.5 py-1.5 shadow-sm transition-colors hover:bg-accent"
         >
-          <div className="h-7 w-7 rounded-full bg-gradient-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-sm">
+          <div className="h-7 w-7 rounded-full bg-linear-to-br from-violet-400 to-indigo-600 flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-sm">
             JD
           </div>
           <div className="hidden md:block text-left leading-tight">
@@ -106,21 +128,20 @@ export function UserProfileDropdown() {
         </button>
       </DropdownMenuTrigger>
 
-      {/* 2. The menu that appears on click */}
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>Profile</DropdownMenuItem>
-          <DropdownMenuItem>Billing</DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>GitHub</DropdownMenuItem>
-        <DropdownMenuItem>Support</DropdownMenuItem>
-        <DropdownMenuItem disabled>API</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive">Log out</DropdownMenuItem>
+        {USER_MENU_GROUPS.map((group, gi) => (
+          <div key={gi}>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              {group.items.map(({ label, disabled, className }) => (
+                <DropdownMenuItem key={label} disabled={disabled} className={className}>
+                  {label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuGroup>
+          </div>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   )
