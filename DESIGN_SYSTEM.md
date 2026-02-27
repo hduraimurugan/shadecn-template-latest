@@ -7,14 +7,20 @@ This document explains how theming and color control work across the entire appl
 ## Table of Contents
 
 1. [Architecture Overview](#architecture-overview)
-2. [How App.css Controls Colors](#how-appcss-controls-colors)
-3. [Color Token Reference](#color-token-reference)
-4. [Sidebar Token Reference](#sidebar-token-reference)
-5. [Dark Mode Mechanism](#dark-mode-mechanism)
-6. [Layout Components](#layout-components)
-7. [Page Components](#page-components)
-8. [UI Component: DropdownMenu](#ui-component-dropdownmenu)
-9. [Hardcoded vs. Semantic Colors](#hardcoded-vs-semantic-colors)
+2. [Navigation Config](#navigation-config)
+3. [How App.css Controls Colors](#how-appcss-controls-colors)
+4. [Color Token Reference](#color-token-reference)
+5. [Sidebar Token Reference](#sidebar-token-reference)
+6. [Dark Mode Mechanism](#dark-mode-mechanism)
+7. [Layout Components](#layout-components)
+8. [Page Components](#page-components)
+9. [UI Component: DropdownMenu](#ui-component-dropdownmenu)
+10. [UI Component: Table](#ui-component-table)
+11. [UI Component: Drawer](#ui-component-drawer)
+12. [Common Components: TableRenderer](#common-components-tablerenderer)
+13. [Common Components: Pagination](#common-components-pagination)
+14. [Common Components: ItemDetailDrawer](#common-components-itemdetaildrawer)
+15. [Hardcoded vs. Semantic Colors](#hardcoded-vs-semantic-colors)
 
 ---
 
@@ -29,11 +35,61 @@ App.css  ──►  CSS variables (:root / .dark)
     └──►  @layer base  ──►  body, html defaults
                (bg-background, text-foreground applied globally)
 
-Components use only semantic Tailwind classes (bg-card, text-muted-foreground, etc.)
-No hardcoded slate-* or dark:* variants needed in components.
+config/nav.js  ──►  MAIN_NAV, SYSTEM_NAV, USER_MENU_GROUPS, ROUTE_LABELS
+    │
+    ├──►  Sidebar.jsx  (nav items + user menu)
+    └──►  TopBar.jsx   (breadcrumb labels + user menu)
+
+src/components/
+    ├── ui/          ──►  Low-level primitives (Button, Table, Drawer, Badge, etc.)
+    │                     Thin wrappers over Base UI / native HTML with design tokens
+    │
+    └── common/      ──►  High-level reusable blocks (TableRenderer, Pagination, ItemDetailDrawer)
+                          Compose ui/ primitives into ready-to-use page sections
+
+src/data/            ──►  Mock data (mockItems.js) — replace with API calls
 ```
 
+Components use only semantic Tailwind classes (bg-card, text-muted-foreground, etc.)
+No hardcoded slate-* or dark:* variants needed in components.
+
 The entire color system lives in **one file: `src/App.css`**. Changing a variable value there instantly propagates to every component that uses the corresponding Tailwind class.
+
+---
+
+## Navigation Config
+
+All navigation definitions and menu structures are centralised in **one file: `src/config/nav.js`**. Both `Sidebar.jsx` and `TopBar.jsx` import from this single source of truth.
+
+### Exports
+
+| Export | Type | Used By | Purpose |
+|---|---|---|---|
+| `MAIN_NAV` | Array | Sidebar | Main menu items (Dashboard, Items, Inventory, Billing, CRM, Reports) — each with `label`, `to`, `icon`, and optional `end` |
+| `SYSTEM_NAV` | Array | Sidebar | System menu items (Settings, Support) — same shape as `MAIN_NAV` |
+| `ROUTE_LABELS` | Object | TopBar (Breadcrumb) | `{ '/': 'Dashboard', '/item': 'Items', … }` — auto-derived from `MAIN_NAV` + `SYSTEM_NAV` |
+| `USER_MENU_GROUPS` | Array | Sidebar, TopBar (UserProfileDropdown) | User dropdown menu groups — each with `items` array containing `label`, optional `disabled`, and optional `className` |
+
+### Adding a New Route
+
+1. Add an entry to `MAIN_NAV` or `SYSTEM_NAV` in `src/config/nav.js`
+2. `ROUTE_LABELS` updates automatically (it is derived from the nav arrays)
+3. Both the sidebar navigation and topbar breadcrumb reflect the change — no other files need editing
+
+### Icon Conventions
+
+Each nav item specifies a `@tabler/icons-react` icon. Current mappings:
+
+| Item | Icon |
+|---|---|
+| Dashboard | `IconLayoutDashboard` |
+| Items | `IconPackage` |
+| Inventory | `IconBuildingWarehouse` |
+| Billing | `IconReceipt2` |
+| CRM | `IconUsers` |
+| Reports | `IconChartBar` |
+| Settings | `IconSettings` |
+| Support | `IconHelpCircle` |
 
 ---
 
@@ -249,6 +305,8 @@ Always rendered with a hardcoded dark navy background (`style={{ background: '#1
 
 ## Page Components
 
+### Base Page Pattern
+
 All pages share an identical structural pattern:
 
 ```jsx
@@ -274,6 +332,8 @@ All pages share an identical structural pattern:
 | Empty-state icon | `text-muted-foreground/40` | 40% opacity of muted-foreground — very faint |
 | Empty-state label | `text-muted-foreground` | Standard muted text |
 
+---
+
 ### DashboardPage (`src/pages/DashboardPage.jsx`)
 
 The dashboard extends the base pattern with stat cards and uses **hardcoded accent colors** for the status indicators. These are intentionally not mapped to semantic tokens because they carry specific semantic meaning (green = up, red = down, amber = warning):
@@ -292,6 +352,76 @@ The dashboard extends the base pattern with stat cards and uses **hardcoded acce
 
 ---
 
+### ItemsPage (`src/pages/ItemsPage.jsx`) — Data Table Page Pattern
+
+Pages that display tabular data follow this extended pattern. The card has no padding (`p-6` omitted) so the table stretches edge-to-edge inside the card border.
+
+```jsx
+<div className="space-y-6">
+  {/* Header with action button */}
+  <div className="flex items-center justify-between">
+    <div>
+      <h1 className="text-2xl font-bold text-foreground">Page Title</h1>
+      <p className="text-sm text-muted-foreground mt-0.5">Subtitle.</p>
+    </div>
+    <Button><IconPlus size={16} /> Create Item</Button>
+  </div>
+
+  {/* Table card — no padding, overflow-hidden for rounded corners */}
+  <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+    <TableRenderer columns={columns} data={paginatedData} ... />
+    <Pagination currentPage={page} totalItems={total} pageSize={PAGE_SIZE} onPageChange={setPage} />
+  </div>
+
+  {/* Detail drawer — controlled, no trigger in JSX */}
+  <ItemDetailDrawer item={selected} open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+
+  {/* Delete confirmation — controlled AlertDialog */}
+  <AlertDialog open={!!deleteTarget} onOpenChange={...}>...</AlertDialog>
+</div>
+```
+
+**Column definition pattern** — columns are defined outside the component to avoid re-creation on every render:
+
+```jsx
+const columns = [
+  {
+    key: "name",
+    label: "Product",
+    render: (value, row) => (
+      // Thumbnail + name + SKU stacked
+      <div className="flex items-center gap-3">
+        <img src={row.image} className="size-9 rounded-lg object-cover border border-border" />
+        <div>
+          <p className="font-medium text-foreground">{value}</p>
+          <p className="text-xs text-muted-foreground">{row.sku}</p>
+        </div>
+      </div>
+    ),
+  },
+  { key: "category", label: "Category" },              // plain string — no render fn needed
+  {
+    key: "status",
+    label: "Status",
+    render: (value) => (
+      <Badge variant={value === "Active" ? "default" : "secondary"}>{value}</Badge>
+    ),
+  },
+]
+```
+
+| Element | Class | Notes |
+|---|---|---|
+| Table card | `rounded-xl border border-border bg-card shadow-sm overflow-hidden` | `overflow-hidden` clips table corners; no `p-6` |
+| Product thumbnail | `size-9 rounded-lg object-cover border border-border` | 36 × 36px, rounded, with border |
+| Product name | `font-medium text-foreground` | Primary weight inside cell |
+| SKU sub-line | `text-xs text-muted-foreground` | Dimmed, smaller |
+| Out-of-stock stock | `text-destructive font-medium` | Red-600/red-400 |
+| Status active badge | `Badge variant="default"` | Blue-600 primary fill |
+| Status inactive badge | `Badge variant="secondary"` | Muted fill |
+
+---
+
 ## UI Component: DropdownMenu
 
 Located at `src/components/ui/dropdown-menu.jsx`. Built on `@base-ui/react/menu`. Uses semantic classes throughout:
@@ -305,6 +435,380 @@ Located at `src/components/ui/dropdown-menu.jsx`. Built on `@base-ui/react/menu`
 | `DropdownMenuShortcut` | `text-muted-foreground` | Dimmed shortcut hint |
 
 > **Note on `DropdownMenuLabel`:** Base UI's `Menu.GroupLabel` requires a `Menu.Group` parent. Since shadcn's API allows labels outside groups, `DropdownMenuLabel` is implemented as a plain `<div>` with manual styling — keeping the same visual appearance without the context constraint.
+
+---
+
+## UI Component: Table
+
+Located at `src/components/ui/table.jsx`. Native HTML table elements wrapped with `data-slot` attributes and semantic design tokens. No Base UI dependency — uses plain HTML.
+
+### Component Tree
+
+```
+Table          ──►  <div overflow-auto> + <table>
+└── TableHeader   ──►  <thead>
+│   └── TableRow  ──►  <tr>  (header row)
+│       └── TableHead  ──►  <th>
+└── TableBody     ──►  <tbody>
+    └── TableRow  ──►  <tr>  (data row)
+        └── TableCell  ──►  <td>
+```
+
+### Token Usage
+
+| Component | Key Classes | Notes |
+|---|---|---|
+| `Table` wrapper | `overflow-auto` | Enables horizontal scroll on small screens |
+| `TableHeader` | `[&_tr]:border-b [&_tr]:border-border` | Applies bottom border to every header row via child selector |
+| `TableBody` | `[&_tr:last-child]:border-0` | Removes bottom border on the last data row |
+| `TableRow` | `border-b border-border hover:bg-accent/50` | Row divider + 50% opacity accent hover |
+| `TableHead` | `text-muted-foreground h-10 px-3 text-xs uppercase tracking-wide` | Muted, small-caps column labels |
+| `TableCell` | `px-3 py-2.5 text-foreground` | Standard padding, primary text color |
+
+### Usage
+
+```jsx
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
+
+<Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Name</TableHead>
+      <TableHead>Status</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>Item A</TableCell>
+      <TableCell>Active</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+```
+
+> **Direct use is rare.** In most cases you should use `TableRenderer` (see below), which handles column mapping, serial numbers, actions, and empty states automatically. Use the raw `Table` primitives only when you need full control over the markup.
+
+---
+
+## UI Component: Drawer
+
+Located at `src/components/ui/drawer.jsx`. Built on `@base-ui/react/drawer` (imported as `DrawerPreview`). Slides in from the **right side** of the viewport. Used for contextual detail panels that don't require leaving the current page.
+
+### Component Tree
+
+```
+Drawer              ──►  DrawerPrimitive.Root  (state controller, no DOM element)
+├── DrawerTrigger   ──►  DrawerPrimitive.Trigger  (optional — omit for controlled usage)
+└── DrawerContent   ──►  DrawerPortal + DrawerOverlay + DrawerPrimitive.Popup
+    ├── DrawerHeader   ──►  <div>  (border-b, px-6 py-4)
+    │   ├── DrawerTitle       ──►  DrawerPrimitive.Title
+    │   └── DrawerDescription ──►  DrawerPrimitive.Description
+    ├── <div flex-1 overflow-y-auto>  ──►  scrollable body (managed by consumer)
+    └── DrawerFooter   ──►  <div>  (border-t, bg-muted/50, px-6 py-4)
+```
+
+### Token Usage
+
+| Component | Key Classes | Notes |
+|---|---|---|
+| `DrawerOverlay` | `bg-black/10 backdrop-blur-xs` | Semi-transparent backdrop — same as AlertDialog overlay |
+| `DrawerContent` (popup) | `bg-card border-l border-border fixed inset-y-0 right-0 max-w-md` | Card-surface panel, full height, 448px max width |
+| Animation open | `data-open:slide-in-from-right data-open:animate-in` | Slides in from right edge |
+| Animation close | `data-closed:slide-out-to-right data-closed:animate-out` | Slides out to right edge |
+| `DrawerHeader` | `border-b border-border px-6 py-4` | Separator below header |
+| `DrawerTitle` | `text-lg font-semibold text-foreground` | Standard heading weight |
+| `DrawerDescription` | `text-sm text-muted-foreground` | Dimmed subtitle |
+| `DrawerFooter` | `border-t border-border bg-muted/50 px-6 py-4` | Muted footer strip with top separator |
+
+### Controlled vs. Triggered Usage
+
+**Triggered** (Drawer manages its own open state):
+```jsx
+<Drawer>
+  <DrawerTrigger render={<Button />}>Open</DrawerTrigger>
+  <DrawerContent>...</DrawerContent>
+</Drawer>
+```
+
+**Controlled** (parent manages open state — standard for data table row actions):
+```jsx
+<Drawer open={drawerOpen} onOpenChange={(open) => { if (!open) setDrawerOpen(false) }}>
+  <DrawerContent>...</DrawerContent>
+</Drawer>
+```
+
+> **`DrawerClose` with `render` prop** — to render the close button as a styled `Button`, use the Base UI `render` pattern (same as `AlertDialogCancel`):
+> ```jsx
+> <DrawerClose render={<Button variant="ghost" size="icon-sm" />}>
+>   <IconX size={18} />
+> </DrawerClose>
+> ```
+
+---
+
+## Common Components: TableRenderer
+
+Located at `src/components/common/TableRenderer.jsx`. A high-level component that renders a complete, styled data table from a column definition and a data array. Handles serial numbers, custom cell rendering, row actions, and empty state — all without the consumer touching raw Table primitives.
+
+### Props
+
+| Prop | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `columns` | `Column[]` | ✓ | — | Column definitions (see below) |
+| `data` | `object[]` | ✓ | — | Array of row data objects |
+| `startIndex` | `number` | | `1` | Serial number for the first row — pass `(currentPage - 1) * pageSize + 1` for multi-page tables |
+| `onView` | `(row) => void` | | — | Callback when "View details" is clicked; omit to hide the option |
+| `onEdit` | `(row) => void` | | — | Callback when "Edit" is clicked; omit to hide the option |
+| `onDelete` | `(row) => void` | | — | Callback when "Delete" is clicked; omit to hide the option |
+
+The actions column is **only rendered** when at least one of `onView`, `onEdit`, or `onDelete` is provided.
+
+### Column Definition (`Column`)
+
+```ts
+{
+  key: string           // key to read from each row object
+  label: string         // column header text
+  render?: (value: any, row: object) => ReactNode  // optional custom cell renderer
+}
+```
+
+- If `render` is omitted, the raw `row[key]` value is rendered as text.
+- The `render` function receives both the cell value and the full row object, enabling cross-field rendering (e.g., showing a thumbnail from `row.image` inside the name column).
+
+### Built-in Columns
+
+`TableRenderer` always prepends a **serial number column** (`#`) before the consumer-defined columns. This column:
+- Has a fixed width of `w-12` and is centered
+- Displays `startIndex + rowIndex` using `tabular-nums` for alignment
+- Updates correctly across pages when `startIndex` is set
+
+### Action Menu
+
+When action callbacks are provided, each row renders a three-dot (`⋯`) ghost icon button in the rightmost column. The button is **invisible by default** and fades in on row hover (`opacity-0 group-hover:opacity-100`). Clicking it opens a `DropdownMenu`:
+
+| Menu Item | Icon | Variant | Condition |
+|---|---|---|---|
+| View details | `IconEye` | default | `onView` provided |
+| Edit | `IconEdit` | default | `onEdit` provided |
+| *(separator)* | — | — | `onDelete` provided |
+| Delete | `IconTrash` | destructive | `onDelete` provided |
+
+> **Delete is visually separated** from View/Edit by a `DropdownMenuSeparator` to reduce accidental clicks on a destructive action.
+
+### Empty State
+
+When `data` is empty or `null`, `TableRenderer` renders a centered empty state instead of a table:
+
+```
+No items found
+Try adjusting your filters or add a new item.
+```
+
+### Full Usage Example
+
+```jsx
+import { useState } from "react"
+import { TableRenderer } from "@/components/common/TableRenderer"
+import { Badge } from "@/components/ui/badge"
+
+const columns = [
+  {
+    key: "name",
+    label: "Product",
+    render: (value, row) => (
+      <div className="flex items-center gap-3">
+        <img src={row.image} className="size-9 rounded-lg object-cover border border-border" />
+        <div>
+          <p className="font-medium text-foreground">{value}</p>
+          <p className="text-xs text-muted-foreground">{row.sku}</p>
+        </div>
+      </div>
+    ),
+  },
+  { key: "category", label: "Category" },
+  {
+    key: "status",
+    label: "Status",
+    render: (value) => (
+      <Badge variant={value === "Active" ? "default" : "secondary"}>{value}</Badge>
+    ),
+  },
+]
+
+function MyPage() {
+  const [data] = useState(someData)
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 10
+  const paged = data.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+  return (
+    <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+      <TableRenderer
+        columns={columns}
+        data={paged}
+        startIndex={(page - 1) * PAGE_SIZE + 1}
+        onView={(row) => openDrawer(row)}
+        onEdit={(row) => openEditForm(row)}
+        onDelete={(row) => confirmDelete(row)}
+      />
+    </div>
+  )
+}
+```
+
+### Token Summary
+
+| Element | Class | Notes |
+|---|---|---|
+| Header row | `bg-muted/40 hover:bg-muted/40` | Subtle tint, hover disabled to keep header static |
+| Header `#` cell | `w-12 text-center` | Fixed-width serial column |
+| Data `#` cell | `w-12 text-center text-muted-foreground tabular-nums` | Dimmed, monospaced digits |
+| Row | `group` | Enables `group-hover` on the action button |
+| Action trigger | `opacity-0 group-hover:opacity-100 transition-opacity` | Hidden until row is hovered |
+| Actions column header | `w-14 text-right pr-4` | Right-aligned, narrow |
+
+---
+
+## Common Components: Pagination
+
+Located at `src/components/common/Pagination.jsx`. Client-side pagination bar that renders a "Showing X–Y of Z items" summary and page navigation controls. **Returns `null` when `totalPages <= 1`** so it disappears automatically for single-page datasets.
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `currentPage` | `number` | ✓ | 1-based current page number |
+| `totalItems` | `number` | ✓ | Total number of items across all pages |
+| `pageSize` | `number` | ✓ | Number of items per page |
+| `onPageChange` | `(page: number) => void` | ✓ | Called with the new page number when user navigates |
+
+`totalPages` is derived internally as `Math.ceil(totalItems / pageSize)`.
+
+### Page Number Algorithm
+
+The component always shows: first page, up to 3 pages around the current page, and last page — with `…` ellipsis to fill any gaps.
+
+| Total pages | Display |
+|---|---|
+| ≤ 5 | All page numbers shown, no ellipsis |
+| > 5, near start | `1 2 3 … N` |
+| > 5, in middle | `1 … 4 5 6 … N` |
+| > 5, near end | `1 … N-2 N-1 N` |
+
+### Layout
+
+```
+[ Showing 1–10 of 47 items ]    [ ‹ ][ 1 ][ 2 ][ 3 ][ … ][ 5 ][ › ]
+```
+
+- Left: summary text with `text-muted-foreground`, range and total in `font-medium text-foreground`
+- Right: Prev/Next as `ghost icon-sm` Buttons (disabled at boundaries), page numbers as `ghost icon-sm` Buttons, active page as `default` Button
+
+### Token Summary
+
+| Element | Class | Notes |
+|---|---|---|
+| Container | `border-t border-border px-4 py-3` | Top separator, sits directly below the table |
+| Summary text | `text-sm text-muted-foreground` | Dimmed |
+| Range / total numbers | `font-medium text-foreground` | Emphasized within summary |
+| Inactive page button | `Button variant="ghost" size="icon-sm"` | Ghost style |
+| Active page button | `Button variant="default" size="icon-sm"` | Primary fill (blue-600) |
+| Ellipsis | `text-sm text-muted-foreground` | Plain span, not a button |
+
+### Usage with TableRenderer
+
+`Pagination` is placed **inside the same card** as `TableRenderer`, separated by the `border-t` built into the component:
+
+```jsx
+<div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+  <TableRenderer
+    columns={columns}
+    data={paginatedItems}
+    startIndex={(currentPage - 1) * PAGE_SIZE + 1}
+    onView={handleView}
+    onEdit={handleEdit}
+    onDelete={handleDelete}
+  />
+  <Pagination
+    currentPage={currentPage}
+    totalItems={items.length}
+    pageSize={PAGE_SIZE}
+    onPageChange={setCurrentPage}
+  />
+</div>
+```
+
+> **`overflow-hidden` on the card is required** — it ensures the bottom corners of the `Pagination` bar are clipped by the card's `rounded-xl` border, so the card looks seamless.
+
+---
+
+## Common Components: ItemDetailDrawer
+
+Located at `src/components/common/ItemDetailDrawer.jsx`. A controlled right-side drawer that displays a product's full details. Composes `Drawer`, `Badge`, `Separator`, and `Button` from `src/components/ui/`.
+
+### Props
+
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `item` | `object \| null` | ✓ | The item object to display; `null` is safe (drawer shows placeholder title) |
+| `open` | `boolean` | ✓ | Whether the drawer is open |
+| `onClose` | `() => void` | ✓ | Called when the drawer should close (overlay click, close button, or swipe) |
+
+### Layout Structure
+
+```
+DrawerContent
+├── DrawerHeader
+│   ├── DrawerTitle    ─── item.name
+│   ├── DrawerDescription ─── "Product information and details"
+│   └── DrawerClose (× button)
+│
+├── <div flex-1 overflow-y-auto>   ─── scrollable body
+│   ├── <img>  ─── full-width product image (h-56, object-cover)
+│   └── <div px-6 py-5>
+│       ├── Status row  ─── label + Badge
+│       ├── <Separator />
+│       └── field rows  ─── label (muted) + value (foreground)
+│
+└── DrawerFooter
+    └── DrawerClose (Close button, variant="outline")
+```
+
+### Fields Displayed
+
+| Field key | Label | Format |
+|---|---|---|
+| `sku` | SKU | plain |
+| `category` | Category | plain |
+| `brand` | Brand | plain |
+| `price` | Price | `₹N,NNN` (en-IN locale) |
+| `costPrice` | Cost Price | `₹N,NNN` (en-IN locale) |
+| `unit` | Unit | plain |
+| `stockQty` | Stock Qty | plain |
+| `hsnCode` | HSN Code | plain |
+
+### Token Summary
+
+| Element | Class | Notes |
+|---|---|---|
+| Product image | `w-full h-56 object-cover` | Full-width, 224px tall, crops to fill |
+| Image container | `bg-muted/30 border-b border-border` | Muted bg fallback while loading |
+| Status label | `text-sm text-muted-foreground` | Left side of status row |
+| Active badge | `Badge variant="default"` | Blue-600 primary fill |
+| Inactive badge | `Badge variant="secondary"` | Muted secondary fill |
+| Field label | `text-sm text-muted-foreground shrink-0` | Left, fixed width via shrink-0 |
+| Field value | `text-sm font-medium text-foreground text-right` | Right-aligned, medium weight |
+| Footer | `bg-muted/50 border-t border-border` | Built into `DrawerFooter` |
+
+### Extending for Other Entities
+
+`ItemDetailDrawer` is purpose-built for items. To create a similar drawer for another entity (e.g. customers, orders):
+
+1. Copy `ItemDetailDrawer.jsx` to a new file (e.g. `CustomerDetailDrawer.jsx`)
+2. Update the `fields` array with the new entity's keys and labels
+3. Adjust the image handling if the entity has no image
+4. Keep the same `Drawer` + `DrawerContent` structure — only the body content changes
 
 ---
 
