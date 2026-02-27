@@ -23,6 +23,7 @@ import { useAuth } from '@/context/AuthContext'
 /* ─── Route → readable name mapping ─────────────────────────── */
 const ROUTE_LABELS = {
     '/': 'Dashboard',
+    '/item': 'Items',
     '/inventory': 'Inventory',
     '/billing': 'Billing',
     '/crm': 'CRM',
