@@ -9,6 +9,7 @@ import CrmPage from '../pages/CrmPage'
 import ReportsPage from '../pages/ReportsPage'
 import SettingsPage from '../pages/SettingsPage'
 import SupportPage from '../pages/SupportPage'
+import ItemsPage from '@/pages/ItemsPage'
 
 const router = createBrowserRouter([
     {
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
                 element: <AppLayout />,
                 children: [
                     { index: true, element: <DashboardPage /> },
+                    { path: 'item', element: <ItemsPage /> },
                     { path: 'inventory', element: <InventoryPage /> },
                     { path: 'billing', element: <BillingPage /> },
                     { path: 'crm', element: <CrmPage /> },

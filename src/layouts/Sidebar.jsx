@@ -28,6 +28,7 @@ import {
 /* ─── Nav Definitions ──────────────────────────────────────── */
 const MAIN_NAV = [
     { label: 'Dashboard', to: '/', icon: IconLayoutDashboard, end: true },
+    { label: 'Items', to: '/item', icon: IconPackage },
     { label: 'Inventory', to: '/inventory', icon: IconPackage },
     { label: 'Billing', to: '/billing', icon: IconReceipt2 },
     { label: 'CRM', to: '/crm', icon: IconUsers },
