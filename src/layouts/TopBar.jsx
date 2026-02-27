@@ -19,18 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from '@/context/AuthContext'
-
-/* ─── Route → readable name mapping ─────────────────────────── */
-const ROUTE_LABELS = {
-    '/': 'Dashboard',
-    '/item': 'Items',
-    '/inventory': 'Inventory',
-    '/billing': 'Billing',
-    '/crm': 'CRM',
-    '/reports': 'Reports',
-    '/settings': 'Settings',
-    '/support': 'Support',
-}
+import { ROUTE_LABELS, USER_MENU_GROUPS } from '@/config/nav'
 
 /* ─── Breadcrumb ─────────────────────────────────────────────── */
 function Breadcrumb({ pathname }) {
@@ -124,29 +113,6 @@ function BellButton() {
     </DropdownMenu>
   )
 }
-
-/* ─── User profile menu config ───────────────────────────────── */
-const USER_MENU_GROUPS = [
-  {
-    items: [
-      { label: 'Profile' },
-      { label: 'Billing' },
-      { label: 'Settings' },
-    ],
-  },
-  {
-    items: [
-    //   { label: 'GitHub' },
-      { label: 'Support' },
-      { label: 'API', disabled: true },
-    ],
-  },
-  {
-    items: [
-      { label: 'Log out', className: 'text-destructive' },
-    ],
-  },
-]
 
 /* ─── User Avatar ────────────────────────────────────────────── */
 export function UserProfileDropdown() {

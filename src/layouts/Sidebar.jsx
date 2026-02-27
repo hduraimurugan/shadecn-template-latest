@@ -1,13 +1,6 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
-    IconLayoutDashboard,
-    IconPackage,
-    IconReceipt2,
-    IconUsers,
-    IconChartBar,
-    IconSettings,
-    IconHelpCircle,
     IconChevronDown,
     IconChevronLeft,
     IconLayoutSidebar,
@@ -15,6 +8,7 @@ import {
 } from '@tabler/icons-react'
 import { cn } from '../lib/utils'
 import { useAuth } from '../context/AuthContext'
+import { MAIN_NAV, SYSTEM_NAV, USER_MENU_GROUPS } from '../config/nav'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -24,21 +18,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu'
-
-/* ─── Nav Definitions ──────────────────────────────────────── */
-const MAIN_NAV = [
-    { label: 'Dashboard', to: '/', icon: IconLayoutDashboard, end: true },
-    { label: 'Items', to: '/item', icon: IconPackage },
-    { label: 'Inventory', to: '/inventory', icon: IconPackage },
-    { label: 'Billing', to: '/billing', icon: IconReceipt2 },
-    { label: 'CRM', to: '/crm', icon: IconUsers },
-    { label: 'Reports', to: '/reports', icon: IconChartBar },
-]
-
-const SYSTEM_NAV = [
-    { label: 'Settings', to: '/settings', icon: IconSettings },
-    { label: 'Support', to: '/support', icon: IconHelpCircle },
-]
 
 /* ─── Single nav item ───────────────────────────────────────── */
 function NavItem({ to, icon: Icon, label, end, isExpanded }) {
@@ -89,28 +68,6 @@ function SectionLabel({ children, isExpanded }) {
         </p>
     )
 }
-
-/* ─── User menu groups ───────────────────────────────────────── */
-const USER_MENU_GROUPS = [
-    {
-        items: [
-            { label: 'Profile' },
-            { label: 'Billing' },
-            { label: 'Settings' },
-        ],
-    },
-    {
-        items: [
-            { label: 'Support' },
-            { label: 'API', disabled: true },
-        ],
-    },
-    {
-        items: [
-            { label: 'Log out', className: 'text-destructive' },
-        ],
-    },
-]
 
 /* ─── Sidebar ────────────────────────────────────────────────── */
 export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
