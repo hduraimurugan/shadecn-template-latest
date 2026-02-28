@@ -35,7 +35,7 @@ function NavItem({ to, icon: Icon, label, end, isExpanded }) {
                     !isExpanded ? 'justify-center px-2' : '',
                     isActive
                         ? 'bg-primary text-primary-foreground shadow-sm'
-                        : 'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                        : 'text-sidebar-foreground/50 hover:bg-sidebar-accent hover:text-sidebar-foreground'
                 )
             }
         >
@@ -46,7 +46,7 @@ function NavItem({ to, icon: Icon, label, end, isExpanded }) {
                         strokeWidth={1.75}
                         className={cn(
                             'shrink-0 transition-colors',
-                            isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-sidebar-foreground'
+                            isActive ? 'text-primary-foreground' : 'text-sidebar-foreground/50 group-hover:text-sidebar-foreground'
                         )}
                     />
                     {isExpanded && (
@@ -64,7 +64,7 @@ function SectionLabel({ children, isExpanded }) {
         return <div className="mx-auto my-3 h-px w-6 bg-white/10" />
     }
     return (
-        <p className="mb-1 mt-5 px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground select-none">
+        <p className="mb-1 mt-5 px-3 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/50 select-none">
             {children}
         </p>
     )
@@ -135,7 +135,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                         {isExpanded && (
                             <div className="min-w-0 leading-tight">
                                 <p className="truncate text-sm font-semibold text-sidebar-foreground">Durai Corp</p>
-                                <p className="truncate text-[11px] text-muted-foreground">Admin Panel</p>
+                                <p className="truncate text-[11px] text-sidebar-foreground/50 ">Admin Panel</p>
                             </div>
                         )}
                     </div>
@@ -146,7 +146,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                             type="button"
                             onClick={(e) => { e.stopPropagation(); onToggle(); }}
                             title="Collapse sidebar"
-                            className="hidden md:flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/10 hover:text-sidebar-foreground"
+                            className="hidden md:flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/50  transition-colors hover:bg-white/10 hover:text-sidebar-foreground"
                         >
                             <TbLayoutSidebarRightExpand size={16} strokeWidth={2} />
                             {/* <IconChevronLeft size={14} strokeWidth={2} /> */}
@@ -157,7 +157,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                     <button
                         type="button"
                         onClick={onMobileClose}
-                        className="flex md:hidden h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/10 hover:text-sidebar-foreground"
+                        className="flex md:hidden h-6 w-6 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/50  transition-colors hover:bg-white/10 hover:text-sidebar-foreground"
                     >
                         <IconX size={16} strokeWidth={2} />
                     </button>
@@ -201,9 +201,9 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                                 <>
                                     <div className="min-w-0 flex-1 text-left leading-tight">
                                         <p className="truncate text-xs font-semibold text-sidebar-foreground">{user?.name ?? 'User'}</p>
-                                        <p className="truncate text-[10px] text-muted-foreground">{user?.role ?? 'Member'}</p>
+                                        <p className="truncate text-[10px] text-sidebar-foreground/50 ">{user?.role ?? 'Member'}</p>
                                     </div>
-                                    <IconChevronDown size={14} className="text-muted-foreground shrink-0" strokeWidth={2} />
+                                    <IconChevronDown size={14} className="text-sidebar-foreground/50  shrink-0" strokeWidth={2} />
                                 </>
                             )}
                         </DropdownMenuTrigger>
@@ -231,7 +231,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <p className="text-xs font-semibold text-white truncate">{user?.name ?? 'User'}</p>
-                                        <p className="text-[10px] font-normal text-muted-foreground truncate">{user?.email ?? ''}</p>
+                                        <p className="text-[10px] font-normal text-sidebar-foreground/50  truncate">{user?.email ?? ''}</p>
                                     </div>
                                 </div>
                             </DropdownMenuLabel>
