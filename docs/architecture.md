@@ -59,7 +59,7 @@ All navigation definitions and menu structures are centralised in **one file: `s
 |---|---|---|---|
 | `MAIN_NAV` | Array | Sidebar | Main menu items (Dashboard, Items, Inventory, Billing, CRM, Reports) — each with `label`, `to`, `icon`, and optional `end` |
 | `SYSTEM_NAV` | Array | Sidebar | System menu items (Settings, Support) — same shape as `MAIN_NAV` |
-| `ROUTE_LABELS` | Object | TopBar (Breadcrumb) | `{ '/': 'Dashboard', '/item': 'Items', … }` — auto-derived from `MAIN_NAV` + `SYSTEM_NAV` |
+| `ROUTE_LABELS` | Object | TopBar (Breadcrumb) | `{ '/': 'Dashboard', '/items': 'Items', … }` — auto-derived from `MAIN_NAV` + `SYSTEM_NAV` |
 | `USER_MENU_GROUPS` | Array | Sidebar, TopBar (UserProfileDropdown) | User dropdown menu groups — each with `items` array containing `label`, optional `disabled`, and optional `className` |
 
 ### Adding a New Route

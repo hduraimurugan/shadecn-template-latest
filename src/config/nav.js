@@ -12,7 +12,7 @@ import {
 /* ─── Main navigation ──────────────────────────────────────── */
 export const MAIN_NAV = [
     { label: 'Dashboard', to: '/', icon: IconLayoutDashboard, end: true },
-    { label: 'Items', to: '/item', icon: IconPackage },
+    { label: 'Items', to: '/items', icon: IconPackage },
     { label: 'Inventory', to: '/inventory', icon: IconBuildingWarehouse },
     { label: 'Billing', to: '/billing', icon: IconReceipt2 },
     { label: 'CRM', to: '/crm', icon: IconUsers },
