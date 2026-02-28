@@ -1,4 +1,4 @@
-import { IconDots, IconEye, IconEdit, IconTrash } from "@tabler/icons-react"
+import { IconDots, IconEye, IconEdit, IconTrash, IconChevronRight } from "@tabler/icons-react"
 import {
   Table,
   TableHeader,
@@ -16,8 +16,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 
-function TableRenderer({ columns, data, onView, onEdit, onDelete, startIndex = 1 }) {
+function TableRenderer({ columns, data, onView, onEdit, onDelete, onRowClick, startIndex = 1 }) {
   const hasActions = onView || onEdit || onDelete
+  const hasRowClick = onRowClick && !hasActions
 
   if (!data || data.length === 0) {
     return (
@@ -39,11 +40,16 @@ function TableRenderer({ columns, data, onView, onEdit, onDelete, startIndex = 1
           {hasActions && (
             <TableHead className="w-14 text-right pr-4">Actions</TableHead>
           )}
+          {hasRowClick && <TableHead className="w-10" />}
         </TableRow>
       </TableHeader>
       <TableBody>
         {data.map((row, idx) => (
-          <TableRow key={row.id ?? idx} className="group">
+          <TableRow
+            key={row.id ?? idx}
+            className={hasRowClick ? "group cursor-pointer" : "group"}
+            onClick={hasRowClick ? () => onRowClick(row) : undefined}
+          >
             <TableCell className="w-12 text-center text-muted-foreground tabular-nums">
               {startIndex + idx}
             </TableCell>
@@ -87,6 +93,11 @@ function TableRenderer({ columns, data, onView, onEdit, onDelete, startIndex = 1
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
+              </TableCell>
+            )}
+            {hasRowClick && (
+              <TableCell className="w-10 text-right pr-3">
+                <IconChevronRight size={16} className="text-muted-foreground" />
               </TableCell>
             )}
           </TableRow>
