@@ -6,6 +6,7 @@ import {
     IconLayoutSidebar,
     IconX,
 } from '@tabler/icons-react'
+import { TbLayoutSidebarRightExpand } from "react-icons/tb";
 import { cn } from '../lib/utils'
 import { useAuth } from '../context/AuthContext'
 import { MAIN_NAV, SYSTEM_NAV, USER_MENU_GROUPS } from '../config/nav'
@@ -147,7 +148,8 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                             title="Collapse sidebar"
                             className="hidden md:flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/10 hover:text-sidebar-foreground"
                         >
-                            <IconChevronLeft size={14} strokeWidth={2} />
+                            <TbLayoutSidebarRightExpand size={16} strokeWidth={2} />
+                            {/* <IconChevronLeft size={14} strokeWidth={2} /> */}
                         </button>
                     )}
 
