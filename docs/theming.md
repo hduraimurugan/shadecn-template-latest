@@ -112,10 +112,13 @@ body / content area            body / content area
 
 The sidebar has its own token group. By default it is dark navy (`#1C2333`) in both light and dark modes. When **Glass Light** sidebar style is active (`.sidebar-glass` class on `<html>`), these tokens are overridden:
 
+### Nav / Shell Tokens
+
 | CSS Variable | Tailwind Class | Default (Modern Dark) | Glass Light (Light Mode) | Glass Light (Dark Mode) |
 |---|---|---|---|---|
 | `--sidebar` | `bg-sidebar` | `#1C2333` navy | white/82% | slate-900/82% |
 | `--sidebar-foreground` | `text-sidebar-foreground` | slate-100 | slate-800 | slate-100 |
+| `--sidebar-foreground-muted` | `text-sidebar-foreground-muted` | slate-100/50% | slate-500 (full opacity) | slate-100/50% |
 | `--sidebar-primary` | `bg-sidebar-primary` | active palette primary | active palette primary | active palette primary |
 | `--sidebar-primary-foreground` | `text-sidebar-primary-foreground` | white | white | white |
 | `--sidebar-accent` | `bg-sidebar-accent` | white/5% | slate-200/70% | white/8% |
@@ -123,7 +126,25 @@ The sidebar has its own token group. By default it is dark navy (`#1C2333`) in b
 | `--sidebar-border` | `border-sidebar-border` | white/8% | slate-200 | white/10% |
 | `--sidebar-ring` | `ring-sidebar-ring` | active palette primary | active palette primary | active palette primary |
 
-> **Note:** `--sidebar-primary` and `--sidebar-ring` are no longer fixed to blue-600 — they track the active color palette via `style.setProperty` in `useTheme`.
+> **`--sidebar-foreground-muted`** is used for inactive nav item text, section labels, and secondary UI chrome. On dark-navy sidebars it is `slate-100` at 50% opacity (dimmed bright); on the glass-light sidebar it switches to full-opacity `slate-500` to stay readable against the near-white background.
+
+> **`--sidebar-primary` and `--sidebar-ring`** are not fixed to blue-600 — they track the active color palette via `style.setProperty` in `useTheme`.
+
+### Sidebar User-Menu Dropdown Tokens
+
+The bottom user-menu `DropdownMenuContent` has its own popover token group so its appearance adapts to the sidebar style. The component sets these as local `--popover`, `--foreground`, etc. CSS variable overrides via an inline `style={{}}`.
+
+| CSS Variable | Default (Modern Dark) | Glass Light (Light Mode) | Glass Light (Dark Mode) |
+|---|---|---|---|
+| `--sidebar-popover` | dark navy | white | dark navy |
+| `--sidebar-popover-foreground` | slate-100 | slate-800 | slate-100 |
+| `--sidebar-popover-accent` | white/8% | slate-50 | white/8% |
+| `--sidebar-popover-accent-foreground` | slate-100 | slate-800 | slate-100 |
+| `--sidebar-popover-border` | white/10% | slate-200 | white/10% |
+| `--sidebar-popover-muted-foreground` | slate-400 | slate-500 | slate-400 |
+| `--sidebar-popover-destructive` | red-400 | red-600 | red-400 |
+
+**Rule:** The dropdown is always dark navy when the sidebar is dark (both modern-dark style and dark-mode glass). It switches to a white/light card only when sidebar style is **Glass Light AND light mode is active**.
 
 The sidebar `<aside>` uses `style={{ background: 'var(--sidebar)' }}` (reads the CSS variable) and has the `sidebar-panel` class so that `html.sidebar-glass .sidebar-panel` can apply `backdrop-filter: blur(12px)` for the frosted effect.
 
@@ -200,11 +221,30 @@ The OS sync is handled in two places — not in a `useEffect` body — to satisf
 
 ### Sidebar Glass Light
 
-When `.sidebar-glass` is on `<html>`, all `--sidebar-*` variables are overridden to a translucent palette. The `html.dark.sidebar-glass` block handles the dark-mode variant automatically.
+When `.sidebar-glass` is on `<html>`, all `--sidebar-*` variables (nav/shell + dropdown) are overridden. Two CSS blocks in `App.css` handle the two mode combinations:
 
 ```css
-html.sidebar-glass           { --sidebar: oklch(0.97 ... / 82%); /* near-white */ }
-html.dark.sidebar-glass      { --sidebar: oklch(0.208 ... / 82%); /* slate-900 */ }
+/* Light mode + glass sidebar */
+html.sidebar-glass {
+  --sidebar: oklch(0.97 ... / 82%);          /* near-white translucent */
+  --sidebar-foreground: oklch(0.279 ...);    /* slate-800 */
+  --sidebar-foreground-muted: oklch(0.554 ...); /* slate-500 — full opacity */
+  --sidebar-accent: oklch(0.929 ... / 70%);  /* slate-200/70% hover */
+  /* dropdown switches to light card */
+  --sidebar-popover: oklch(1 0 0);           /* white */
+  --sidebar-popover-foreground: oklch(0.279 ...); /* slate-800 */
+  /* ... light border, accent, muted, destructive */
+}
+
+/* Dark mode + glass sidebar — stays dark */
+html.dark.sidebar-glass {
+  --sidebar: oklch(0.208 ... / 82%);         /* slate-900 translucent */
+  --sidebar-foreground-muted: oklch(0.968 ... / 50%); /* back to bright/50% */
+  /* dropdown stays dark navy */
+  --sidebar-popover: oklch(0.260 ...);       /* dark navy */
+  /* ... dark border, accent, muted, destructive */
+}
+
 html.sidebar-glass .sidebar-panel { backdrop-filter: blur(12px); }
 ```
 
@@ -217,6 +257,7 @@ A small set of colors are intentionally **not** mapped to CSS variables:
 | Element | Hardcoded Value | Why Not Semantic |
 |---|---|---|
 | Sidebar background | `style={{ background: 'var(--sidebar)' }}` | Uses CSS variable — navy by default, overridden by Glass Light style via `html.sidebar-glass` |
+| Sidebar user avatar ring | `bg-linear-to-br from-violet-400 to-indigo-600 text-white` | Decorative gradient identity mark — intentionally palette-independent |
 | Tenant avatar | `bg-slate-600 text-white` | Avatar/badge colors are data-driven, no theme token maps to this |
 | Dashboard status colors | `text-emerald-600`, `text-red-500`, `text-amber-600` | These express data meaning (profit/loss/warning), not UI theme |
 | Stat card icon bgs | `bg-emerald-50 dark:bg-emerald-900/20` etc. | Paired with status colors; separate from the UI theme |

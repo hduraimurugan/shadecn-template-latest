@@ -91,6 +91,23 @@ bg-background  (slate-50  → slate-950)   Page / content area
 | `border-border` | slate-200 | white/10% | All borders |
 | `text-destructive` | red-600 | red-400 | Danger / errors |
 
+### Sidebar Token Quick Reference
+
+The sidebar has a dedicated token group (all prefixed `--sidebar-*`) that is always active regardless of light/dark mode. The `html.sidebar-glass` block overrides them for Glass Light style.
+
+| Token | Tailwind Class | Modern Dark | Glass Light (light) | Glass Light (dark) |
+|---|---|---|---|---|
+| `--sidebar` | `bg-sidebar` | navy | white/82% | slate-900/82% |
+| `--sidebar-foreground` | `text-sidebar-foreground` | slate-100 | slate-800 | slate-100 |
+| `--sidebar-foreground-muted` | `text-sidebar-foreground-muted` | slate-100/50% | slate-500 | slate-100/50% |
+| `--sidebar-accent` | `bg-sidebar-accent` | white/5% | slate-200/70% | white/8% |
+| `--sidebar-border` | `border-sidebar-border` | white/8% | slate-200 | white/10% |
+| `--sidebar-primary` | `bg-sidebar-primary` | palette primary | palette primary | palette primary |
+| `--sidebar-popover` | *(inline var)* | dark navy | white | dark navy |
+| `--sidebar-popover-foreground` | *(inline var)* | slate-100 | slate-800 | slate-100 |
+
+> Full sidebar popover token table (7 tokens) is in [docs/theming.md](./docs/theming.md#sidebar-user-menu-dropdown-tokens).
+
 ### Dynamic Theme System
 
 All appearance state is managed by `useTheme()` (`src/hooks/useTheme.jsx`) and applied by mutating `<html>` directly. State persists to localStorage automatically.
@@ -100,7 +117,7 @@ All appearance state is managed by `useTheme()` (`src/hooks/useTheme.jsx`) and a
 | `theme` | `'light' \| 'dark'` | `'dark'` | Adds/removes `.dark` class on `<html>` |
 | `palette` | palette id string | `'ocean-blue'` | Sets `--primary`, `--ring`, `--sidebar-primary`, `--sidebar-ring` via `style.setProperty` |
 | `density` | `'compact' \| 'balanced' \| 'relaxed'` | `'balanced'` | Adds `density-{value}` class on `<html>` → overrides `--radius` |
-| `sidebarStyle` | `'modern-dark' \| 'glass-light'` | `'modern-dark'` | Toggles `.sidebar-glass` class on `<html>` → overrides all `--sidebar-*` tokens |
+| `sidebarStyle` | `'modern-dark' \| 'glass-light'` | `'modern-dark'` | Toggles `.sidebar-glass` class on `<html>` → overrides all `--sidebar-*` nav tokens and `--sidebar-popover-*` dropdown tokens |
 | `systemPreference` | boolean | `false` | On mount: `theme` initializer reads OS directly. At runtime: `setSystemPreference(true)` immediately syncs `theme` to OS and subscribes the `prefers-color-scheme` change listener |
 
 > `setSystemPreference` is a **wrapped setter** (not a raw `setState`) — calling it with `true` both sets the flag and calls `setTheme(getOsTheme())` in the same event tick, so the UI updates instantly without a redundant effect render.

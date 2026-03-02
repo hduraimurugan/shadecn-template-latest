@@ -40,6 +40,15 @@
   --sidebar-accent-foreground: oklch(0.968 0.007 247.896);
   --sidebar-border: oklch(1 0 0 / 8%);
   --sidebar-ring: oklch(0.546 0.245 262.881);
+  --sidebar-foreground-muted: oklch(0.968 0.007 247.896 / 50%); /* slate-100 / 50% — dimmed on dark navy */
+  /* sidebar user-menu dropdown — dark navy to contrast the dark sidebar */
+  --sidebar-popover: oklch(0.260 0.042 264);
+  --sidebar-popover-foreground: oklch(0.968 0.007 247.896);
+  --sidebar-popover-accent: oklch(1 0 0 / 8%);
+  --sidebar-popover-accent-foreground: oklch(0.968 0.007 247.896);
+  --sidebar-popover-border: oklch(1 0 0 / 10%);
+  --sidebar-popover-muted-foreground: oklch(0.704 0.04 256.788);
+  --sidebar-popover-destructive: oklch(0.704 0.191 22.216);
 }
 
 .dark {
@@ -75,6 +84,15 @@
   --sidebar-accent-foreground: oklch(0.968 0.007 247.896);
   --sidebar-border: oklch(1 0 0 / 8%);
   --sidebar-ring: oklch(0.546 0.245 262.881);
+  --sidebar-foreground-muted: oklch(0.968 0.007 247.896 / 50%); /* slate-100 / 50% — dimmed on dark navy */
+  /* sidebar user-menu dropdown — same dark navy in dark mode */
+  --sidebar-popover: oklch(0.260 0.042 264);
+  --sidebar-popover-foreground: oklch(0.968 0.007 247.896);
+  --sidebar-popover-accent: oklch(1 0 0 / 8%);
+  --sidebar-popover-accent-foreground: oklch(0.968 0.007 247.896);
+  --sidebar-popover-border: oklch(1 0 0 / 10%);
+  --sidebar-popover-muted-foreground: oklch(0.704 0.04 256.788);
+  --sidebar-popover-destructive: oklch(0.704 0.191 22.216);
 }
 
 @theme inline {
@@ -85,6 +103,7 @@
   --color-sidebar-accent: var(--sidebar-accent);
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground-muted: var(--sidebar-foreground-muted);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
   --color-chart-5: var(--chart-5);
@@ -198,16 +217,34 @@
 html.sidebar-glass {
   --sidebar: oklch(0.97 0.003 247.858 / 82%);
   --sidebar-foreground: oklch(0.279 0.041 260.031);
+  --sidebar-foreground-muted: oklch(0.554 0.046 257.417); /* slate-500 — full opacity, readable on light bg */
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-accent: oklch(0.929 0.013 255.508 / 70%);
   --sidebar-accent-foreground: oklch(0.279 0.041 260.031);
+  /* dropdown follows light theme in glass-light mode */
+  --sidebar-popover: oklch(1 0 0);                          /* white */
+  --sidebar-popover-foreground: oklch(0.279 0.041 260.031); /* slate-800 */
+  --sidebar-popover-accent: oklch(0.984 0.003 247.858);     /* slate-50 */
+  --sidebar-popover-accent-foreground: oklch(0.279 0.041 260.031);
+  --sidebar-popover-border: oklch(0.929 0.013 255.508);     /* slate-200 */
+  --sidebar-popover-muted-foreground: oklch(0.554 0.046 257.417); /* slate-500 */
+  --sidebar-popover-destructive: oklch(0.577 0.245 27.325); /* red-600 */
 }
 html.dark.sidebar-glass {
   --sidebar: oklch(0.208 0.042 264.695 / 82%);
   --sidebar-foreground: oklch(0.968 0.007 247.896);
+  --sidebar-foreground-muted: oklch(0.968 0.007 247.896 / 50%); /* same as default dark navy */
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-accent: oklch(1 0 0 / 8%);
   --sidebar-accent-foreground: oklch(0.968 0.007 247.896);
+  /* dropdown stays dark navy in dark mode even with glass sidebar */
+  --sidebar-popover: oklch(0.260 0.042 264);
+  --sidebar-popover-foreground: oklch(0.968 0.007 247.896);
+  --sidebar-popover-accent: oklch(1 0 0 / 8%);
+  --sidebar-popover-accent-foreground: oklch(0.968 0.007 247.896);
+  --sidebar-popover-border: oklch(1 0 0 / 10%);
+  --sidebar-popover-muted-foreground: oklch(0.704 0.04 256.788);
+  --sidebar-popover-destructive: oklch(0.704 0.191 22.216);
 }
 html.sidebar-glass .sidebar-panel {
   backdrop-filter: blur(12px);

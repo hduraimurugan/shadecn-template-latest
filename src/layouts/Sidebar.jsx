@@ -35,7 +35,7 @@ function NavItem({ to, icon: Icon, label, end, isExpanded }) {
                     !isExpanded ? 'justify-center px-2' : '',
                     isActive
                         ? 'bg-primary text-primary-foreground shadow-sm'
-                        : 'text-sidebar-foreground/50 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                        : 'text-sidebar-foreground-muted hover:bg-sidebar-accent hover:text-sidebar-foreground'
                 )
             }
         >
@@ -46,7 +46,7 @@ function NavItem({ to, icon: Icon, label, end, isExpanded }) {
                         strokeWidth={1.75}
                         className={cn(
                             'shrink-0 transition-colors',
-                            isActive ? 'text-primary-foreground' : 'text-sidebar-foreground/50 group-hover:text-sidebar-foreground'
+                            isActive ? 'text-primary-foreground' : 'text-sidebar-foreground-muted group-hover:text-sidebar-foreground'
                         )}
                     />
                     {isExpanded && (
@@ -61,10 +61,10 @@ function NavItem({ to, icon: Icon, label, end, isExpanded }) {
 /* ─── Section label ─────────────────────────────────────────── */
 function SectionLabel({ children, isExpanded }) {
     if (!isExpanded) {
-        return <div className="mx-auto my-3 h-px w-6 bg-white/10" />
+        return <div className="mx-auto my-3 h-px w-6 bg-sidebar-border" />
     }
     return (
-        <p className="mb-1 mt-5 px-3 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/50 select-none">
+        <p className="mb-1 mt-5 px-3 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground-muted select-none">
             {children}
         </p>
     )
@@ -135,7 +135,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                         {isExpanded && (
                             <div className="min-w-0 leading-tight">
                                 <p className="truncate text-sm font-semibold text-sidebar-foreground">Durai Corp</p>
-                                <p className="truncate text-[11px] text-sidebar-foreground/50 ">Admin Panel</p>
+                                <p className="truncate text-[11px] text-sidebar-foreground-muted">Admin Panel</p>
                             </div>
                         )}
                     </div>
@@ -146,7 +146,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                             type="button"
                             onClick={(e) => { e.stopPropagation(); onToggle(); }}
                             title="Collapse sidebar"
-                            className="hidden md:flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/50  transition-colors hover:bg-white/10 hover:text-sidebar-foreground"
+                            className="hidden md:flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-sidebar-foreground-muted transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
                         >
                             <TbLayoutSidebarRightExpand size={16} strokeWidth={2} />
                             {/* <IconChevronLeft size={14} strokeWidth={2} /> */}
@@ -157,7 +157,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                     <button
                         type="button"
                         onClick={onMobileClose}
-                        className="flex md:hidden h-6 w-6 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/50  transition-colors hover:bg-white/10 hover:text-sidebar-foreground"
+                        className="flex md:hidden h-6 w-6 shrink-0 items-center justify-center rounded-md text-sidebar-foreground-muted transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
                     >
                         <IconX size={16} strokeWidth={2} />
                     </button>
@@ -201,9 +201,9 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                                 <>
                                     <div className="min-w-0 flex-1 text-left leading-tight">
                                         <p className="truncate text-xs font-semibold text-sidebar-foreground">{user?.name ?? 'User'}</p>
-                                        <p className="truncate text-[10px] text-sidebar-foreground/50 ">{user?.role ?? 'Member'}</p>
+                                        <p className="truncate text-[10px] text-sidebar-foreground-muted">{user?.role ?? 'Member'}</p>
                                     </div>
-                                    <IconChevronDown size={14} className="text-sidebar-foreground/50  shrink-0" strokeWidth={2} />
+                                    <IconChevronDown size={14} className="text-sidebar-foreground-muted shrink-0" strokeWidth={2} />
                                 </>
                             )}
                         </DropdownMenuTrigger>
@@ -214,14 +214,14 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                             side="top"
                             sideOffset={8}
                             style={{
-                                '--popover':            'oklch(0.260 0.042 264)',
-                                '--popover-foreground': 'oklch(0.968 0.007 247.896)',
-                                '--foreground':         'oklch(0.968 0.007 247.896)',
-                                '--accent':             'oklch(1 0 0 / 8%)',
-                                '--accent-foreground':  'oklch(0.968 0.007 247.896)',
-                                '--border':             'oklch(1 0 0 / 10%)',
-                                '--muted-foreground':   'oklch(0.704 0.04 256.788)',
-                                '--destructive':        'oklch(0.704 0.191 22.216)',
+                                '--popover':            'var(--sidebar-popover)',
+                                '--popover-foreground': 'var(--sidebar-popover-foreground)',
+                                '--foreground':         'var(--sidebar-popover-foreground)',
+                                '--accent':             'var(--sidebar-popover-accent)',
+                                '--accent-foreground':  'var(--sidebar-popover-accent-foreground)',
+                                '--border':             'var(--sidebar-popover-border)',
+                                '--muted-foreground':   'var(--sidebar-popover-muted-foreground)',
+                                '--destructive':        'var(--sidebar-popover-destructive)',
                             }}
                         >
                             <DropdownMenuLabel className="p-0">
@@ -230,8 +230,8 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                                         {user?.initials ?? 'U'}
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <p className="text-xs font-semibold text-white truncate">{user?.name ?? 'User'}</p>
-                                        <p className="text-[10px] font-normal text-sidebar-foreground/50  truncate">{user?.email ?? ''}</p>
+                                        <p className="text-xs font-semibold text-foreground truncate">{user?.name ?? 'User'}</p>
+                                        <p className="text-[10px] font-normal text-muted-foreground truncate">{user?.email ?? ''}</p>
                                     </div>
                                 </div>
                             </DropdownMenuLabel>
