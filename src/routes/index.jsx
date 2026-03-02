@@ -10,7 +10,7 @@ import CrmPage from '../pages/CrmPage'
 import ReportsPage from '../pages/ReportsPage'
 import SettingsPage from '../pages/SettingsPage'
 import SupportPage from '../pages/SupportPage'
-import ItemsPage from '@/pages/ItemsPage'
+import ItemsPage from '@/pages/items/ItemsPage'
 
 const router = createBrowserRouter([
     {
