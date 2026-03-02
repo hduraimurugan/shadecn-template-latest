@@ -83,7 +83,7 @@ The dashboard extends the base pattern with stat cards and uses **hardcoded acce
 
 ---
 
-## ItemsPage (`src/pages/ItemsPage.jsx`) — Data Table Page Pattern
+## ItemsPage (`src/pages/items/ItemsPage.jsx`) — Data Table Page Pattern
 
 Pages that display tabular data follow this extended pattern. The card has no padding (`p-6` omitted) so the table stretches edge-to-edge inside the card border.
 

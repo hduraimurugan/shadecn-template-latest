@@ -38,8 +38,9 @@ src/data/
 
 src/pages/
     ├── DashboardPage.jsx
-    ├── ItemsPage.jsx
     ├── SettingsPage.jsx        ──►  Appearance & Theme Settings (palette, density, sidebar style)
+    ├── items/                  ──►  Items module (feature-based folder)
+    │   └── ItemsPage.jsx
     └── inventory/              ──►  Inventory module (feature-based folder)
         ├── InventoryPage.jsx
         ├── ProductDetailPage.jsx

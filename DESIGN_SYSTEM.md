@@ -55,8 +55,9 @@ src/
 │   └── mockInventory.js             ← Inventory module mock data (replace with API)
 └── pages/
     ├── DashboardPage.jsx
-    ├── ItemsPage.jsx
     ├── SettingsPage.jsx             ← Appearance & Theme Settings UI
+    ├── items/
+    │   └── ItemsPage.jsx
     └── inventory/
         ├── InventoryPage.jsx
         ├── ProductDetailPage.jsx
