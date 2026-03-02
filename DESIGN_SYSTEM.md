@@ -101,7 +101,9 @@ All appearance state is managed by `useTheme()` (`src/hooks/useTheme.jsx`) and a
 | `palette` | palette id string | `'ocean-blue'` | Sets `--primary`, `--ring`, `--sidebar-primary`, `--sidebar-ring` via `style.setProperty` |
 | `density` | `'compact' \| 'balanced' \| 'relaxed'` | `'balanced'` | Adds `density-{value}` class on `<html>` → overrides `--radius` |
 | `sidebarStyle` | `'modern-dark' \| 'glass-light'` | `'modern-dark'` | Toggles `.sidebar-glass` class on `<html>` → overrides all `--sidebar-*` tokens |
-| `systemPreference` | boolean | `false` | Wires `prefers-color-scheme` media query to auto-follow OS mode |
+| `systemPreference` | boolean | `false` | On mount: `theme` initializer reads OS directly. At runtime: `setSystemPreference(true)` immediately syncs `theme` to OS and subscribes the `prefers-color-scheme` change listener |
+
+> `setSystemPreference` is a **wrapped setter** (not a raw `setState`) — calling it with `true` both sets the flag and calls `setTheme(getOsTheme())` in the same event tick, so the UI updates instantly without a redundant effect render.
 
 **To add a new color palette:** edit only `src/config/themes.js` — no CSS changes required.
 

@@ -176,6 +176,28 @@ Three CSS classes on `<html>` override `--radius`:
 .density-relaxed  { --radius: 0.875rem; }   /* more rounded */
 ```
 
+### System Preference (`prefers-color-scheme`)
+
+The OS sync is handled in two places — not in a `useEffect` body — to satisfy the React `react-hooks/set-state-in-effect` rule:
+
+1. **On mount** — the `theme` `useState` initializer reads from the OS directly if `systemPreference` was stored as `true`:
+   ```js
+   const [theme, setTheme] = useState(() => {
+       if (localStorage.getItem('systemPreference') === 'true') return getOsTheme()
+       return localStorage.getItem('theme') || defaultTheme
+   })
+   ```
+
+2. **At runtime** — `setSystemPreference` is a **wrapped setter** (not the raw `useState` setter). Calling it with `true` both updates the flag and immediately calls `setTheme(getOsTheme())` in the same event tick:
+   ```js
+   const setSystemPreference = (value) => {
+       setSystemPreferenceRaw(value)
+       if (value) setTheme(getOsTheme())
+   }
+   ```
+
+3. **OS change listener** — a `useEffect` (dep: `systemPreference`) only registers/removes the `matchMedia` listener. `setTheme` is only called inside the `handler` callback, never synchronously in the effect body.
+
 ### Sidebar Glass Light
 
 When `.sidebar-glass` is on `<html>`, all `--sidebar-*` variables are overridden to a translucent palette. The `html.dark.sidebar-glass` block handles the dark-mode variant automatically.

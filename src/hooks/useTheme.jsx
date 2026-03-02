@@ -3,17 +3,25 @@ import { COLOR_PALETTES } from '../config/themes'
 
 const ThemeContext = createContext(null)
 
+function getOsTheme() {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
 /**
  * Wrap your app (or a subtree) with this provider.
  * Manages: light/dark mode, color palette, interface density, sidebar style,
  * and OS system preference sync. All state is persisted to localStorage.
  */
 export function ThemeProvider({ children, defaultTheme = 'light' }) {
-    const [theme, setTheme] = useState(() => localStorage.getItem('theme') || defaultTheme)
+    const [theme, setTheme] = useState(() => {
+        // If system preference was previously saved on, resolve from OS on mount
+        if (localStorage.getItem('systemPreference') === 'true') return getOsTheme()
+        return localStorage.getItem('theme') || defaultTheme
+    })
     const [palette, setPalette] = useState(() => localStorage.getItem('palette') || 'ocean-blue')
     const [density, setDensity] = useState(() => localStorage.getItem('density') || 'balanced')
     const [sidebarStyle, setSidebarStyle] = useState(() => localStorage.getItem('sidebarStyle') || 'modern-dark')
-    const [systemPreference, setSystemPreference] = useState(() => localStorage.getItem('systemPreference') === 'true')
+    const [systemPreference, setSystemPreferenceRaw] = useState(() => localStorage.getItem('systemPreference') === 'true')
 
     // Sync `dark` class on <html> whenever theme changes
     useEffect(() => {
@@ -23,13 +31,12 @@ export function ThemeProvider({ children, defaultTheme = 'light' }) {
         localStorage.setItem('theme', theme)
     }, [theme])
 
-    // Sync with OS prefers-color-scheme when systemPreference is on
+    // Subscribe to OS color-scheme changes — no synchronous setState in body
     useEffect(() => {
         localStorage.setItem('systemPreference', systemPreference)
         if (!systemPreference) return
         const mq = window.matchMedia('(prefers-color-scheme: dark)')
         const handler = (e) => setTheme(e.matches ? 'dark' : 'light')
-        setTheme(mq.matches ? 'dark' : 'light')
         mq.addEventListener('change', handler)
         return () => mq.removeEventListener('change', handler)
     }, [systemPreference])
@@ -61,6 +68,12 @@ export function ThemeProvider({ children, defaultTheme = 'light' }) {
     }, [sidebarStyle])
 
     const toggleTheme = () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
+
+    // Wrapped setter: immediately syncs theme with OS when turning system preference ON
+    const setSystemPreference = (value) => {
+        setSystemPreferenceRaw(value)
+        if (value) setTheme(getOsTheme())
+    }
 
     return (
         <ThemeContext.Provider value={{
