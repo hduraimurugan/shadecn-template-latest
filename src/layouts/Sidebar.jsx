@@ -101,7 +101,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                 /* Click on the collapsed sidebar → expand it */
                 onClick={collapsed ? onToggle : undefined}
                 className={cn(
-                    'flex h-full shrink-0 flex-col overflow-hidden transition-all duration-300 ease-in-out',
+                    'sidebar-panel flex h-full shrink-0 flex-col overflow-hidden transition-all duration-300 ease-in-out',
                     // Desktop: collapsed vs expanded
                     'hidden md:flex',
                     collapsed ? 'w-14 cursor-pointer' : 'w-[210px]',
@@ -110,7 +110,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
                         ? 'fixed inset-y-0 left-0 z-30 flex w-[210px] md:relative md:z-auto'
                         : 'fixed inset-y-0 -left-[210px] z-30 md:relative md:left-auto'
                 )}
-                style={{ background: '#1C2333' }}
+                style={{ background: 'var(--sidebar)' }}
             >
                 {/* ── Logo / Tenant + toggle ────────────────── */}
                 <div

@@ -3,13 +3,21 @@
 ## Architecture Overview
 
 ```
-App.css  ──►  CSS variables (:root / .dark)
+App.css  ──►  CSS variables (:root / .dark / density-* / sidebar-glass)
     │
     ├──►  @theme inline  ──►  Tailwind utility classes
     │         (maps --var to --color-var)        (bg-card, text-foreground, etc.)
     │
     └──►  @layer base  ──►  body, html defaults
                (bg-background, text-foreground applied globally)
+
+config/themes.js  ──►  COLOR_PALETTES array (palette id, name, hex, primary, ring)
+    │
+    └──►  hooks/useTheme.jsx  ──►  ThemeProvider + useTheme()
+              │                    Manages: theme, palette, density, sidebarStyle, systemPreference
+              │                    Mutates <html> classes + CSS vars — all state in localStorage
+              ├──►  SettingsPage.jsx  (Appearance & Theme Settings UI)
+              └──►  TopBar.jsx        (moon/sun toggle button)
 
 config/nav.js  ──►  MAIN_NAV, SYSTEM_NAV, USER_MENU_GROUPS, ROUTE_LABELS
     │
@@ -31,6 +39,7 @@ src/data/
 src/pages/
     ├── DashboardPage.jsx
     ├── ItemsPage.jsx
+    ├── SettingsPage.jsx        ──►  Appearance & Theme Settings (palette, density, sidebar style)
     └── inventory/              ──►  Inventory module (feature-based folder)
         ├── InventoryPage.jsx
         ├── ProductDetailPage.jsx
@@ -45,7 +54,7 @@ src/pages/
 Components use only semantic Tailwind classes (`bg-card`, `text-muted-foreground`, etc.).
 No hardcoded `slate-*` or `dark:*` variants needed in components.
 
-The entire color system lives in **one file: `src/App.css`**. Changing a variable value there instantly propagates to every component that uses the corresponding Tailwind class.
+The base color system lives in **`src/App.css`**. Runtime theme customisation (palette, density, sidebar style) is handled by **`src/hooks/useTheme.jsx`** + **`src/config/themes.js`**.
 
 ---
 

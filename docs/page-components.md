@@ -29,6 +29,42 @@ All pages share an identical structural pattern:
 
 ---
 
+## SettingsPage (`src/pages/SettingsPage.jsx`)
+
+The Appearance & Theme Settings page. Uses a **draft/save pattern** — changes preview live but only persist when the user clicks "Save Theme".
+
+### State model
+
+```jsx
+const { palette, setPalette, theme, setTheme, density, setDensity,
+        sidebarStyle, setSidebarStyle, systemPreference, setSystemPreference } = useTheme()
+
+const [draft, setDraft] = useState({ palette, theme, density, sidebarStyle, systemPreference })
+const [saved, setSaved] = useState({ palette, theme, density, sidebarStyle, systemPreference })
+```
+
+`applyField(key, value)` updates `draft` and immediately calls the matching `useTheme` setter so the whole app reflects the change instantly. "Save Theme" calls `setSaved({...draft})`. "Discard Changes" calls all setters back to `saved`.
+
+### File-local sub-components
+
+| Component | Purpose |
+|---|---|
+| `MiniSwitch` | Pill toggle for the System Preference row |
+| `PaletteCard` | Selectable palette card — per-card preview toggle is cosmetic only, does not change global mode |
+| `SidebarThumbnail` | Clickable thumbnail previews for Modern Dark / Glass Light sidebar styles |
+
+### Sections
+
+| Section | Card | Controls |
+|---|---|---|
+| System Preference | Top card | `MiniSwitch` → `systemPreference` |
+| Color Palette | Top card | `PaletteCard` × 5 → `palette` |
+| Save / Discard | Top card footer | `Button` pair, disabled when no changes |
+| Interface Density | Bottom-left card | Segmented control → `density` (`compact \| balanced \| relaxed`) |
+| Sidebar Style | Bottom-right card | `SidebarThumbnail` × 2 → `sidebarStyle` (`modern-dark \| glass-light`) |
+
+---
+
 ## DashboardPage (`src/pages/DashboardPage.jsx`)
 
 The dashboard extends the base pattern with stat cards and uses **hardcoded accent colors** for the status indicators. These are intentionally not mapped to semantic tokens because they carry specific semantic meaning (green = up, red = down, amber = warning):

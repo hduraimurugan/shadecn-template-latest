@@ -9,9 +9,9 @@ This is the **master index** for the design system. Every section links to a ded
 | File | Contents |
 |---|---|
 | [docs/architecture.md](./docs/architecture.md) | Project structure, file map, navigation config (`nav.js`), icon conventions, adding routes |
-| [docs/theming.md](./docs/theming.md) | `App.css` CSS variables, `@theme inline` bridge, color token reference, sidebar tokens, dark mode mechanism, hardcoded vs. semantic colors, updating the theme |
+| [docs/theming.md](./docs/theming.md) | `App.css` CSS variables, `@theme inline` bridge, color token reference, sidebar tokens, dark mode mechanism, dynamic palette/density/sidebar-style system, hardcoded vs. semantic colors, updating the theme |
 | [docs/layout-components.md](./docs/layout-components.md) | `AppLayout`, `TopBar`, `Sidebar` — token usage for every element |
-| [docs/page-components.md](./docs/page-components.md) | Base page pattern, `DashboardPage`, `ItemsPage` (data table pattern), column definition patterns |
+| [docs/page-components.md](./docs/page-components.md) | Base page pattern, `DashboardPage`, `ItemsPage` (data table pattern), `SettingsPage` (appearance & theme UI), column definition patterns |
 | [docs/ui-components.md](./docs/ui-components.md) | `DropdownMenu`, `Table`, `Drawer` — low-level primitives in `src/components/ui/` |
 | [docs/common-components.md](./docs/common-components.md) | `TableRenderer`, `Pagination`, `ItemDetailDrawer`, `TabRenderer`, `StockLevelBar` — high-level reusable blocks |
 | [docs/inventory-module.md](./docs/inventory-module.md) | `InventoryPage`, `ProductDetailPage`, `ProductImageGallery`, `StockMovementsTable`, `LinkedInvoicesTable`, `BatchReportDrawer`, `StockDistributionChart`, mock data shapes |
@@ -28,8 +28,13 @@ Components use **only semantic Tailwind classes** (`bg-card`, `text-muted-foregr
 
 ```
 src/
-├── App.css                          ← All CSS variables and theme tokens
-├── config/nav.js                    ← All navigation definitions (single source of truth)
+├── App.css                          ← All CSS variables, theme tokens, density & glass classes
+├── config/
+│   ├── nav.js                       ← All navigation definitions (single source of truth)
+│   └── themes.js                    ← Color palette definitions (add/edit palettes here)
+├── hooks/
+│   └── useTheme.jsx                 ← ThemeProvider + useTheme() — light/dark, palette,
+│                                       density, sidebarStyle, systemPreference
 ├── layouts/
 │   ├── AppLayout.jsx
 │   ├── TopBar.jsx
@@ -51,6 +56,7 @@ src/
 └── pages/
     ├── DashboardPage.jsx
     ├── ItemsPage.jsx
+    ├── SettingsPage.jsx             ← Appearance & Theme Settings UI
     └── inventory/
         ├── InventoryPage.jsx
         ├── ProductDetailPage.jsx
@@ -84,6 +90,20 @@ bg-background  (slate-50  → slate-950)   Page / content area
 | `bg-accent` | slate-50 | slate-700 | Hover backgrounds |
 | `border-border` | slate-200 | white/10% | All borders |
 | `text-destructive` | red-600 | red-400 | Danger / errors |
+
+### Dynamic Theme System
+
+All appearance state is managed by `useTheme()` (`src/hooks/useTheme.jsx`) and applied by mutating `<html>` directly. State persists to localStorage automatically.
+
+| State | Type | Default | Effect |
+|---|---|---|---|
+| `theme` | `'light' \| 'dark'` | `'dark'` | Adds/removes `.dark` class on `<html>` |
+| `palette` | palette id string | `'ocean-blue'` | Sets `--primary`, `--ring`, `--sidebar-primary`, `--sidebar-ring` via `style.setProperty` |
+| `density` | `'compact' \| 'balanced' \| 'relaxed'` | `'balanced'` | Adds `density-{value}` class on `<html>` → overrides `--radius` |
+| `sidebarStyle` | `'modern-dark' \| 'glass-light'` | `'modern-dark'` | Toggles `.sidebar-glass` class on `<html>` → overrides all `--sidebar-*` tokens |
+| `systemPreference` | boolean | `false` | Wires `prefers-color-scheme` media query to auto-follow OS mode |
+
+**To add a new color palette:** edit only `src/config/themes.js` — no CSS changes required.
 
 ### Dark Mode
 

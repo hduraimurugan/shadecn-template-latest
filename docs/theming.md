@@ -110,20 +110,22 @@ body / content area            body / content area
 
 ## Sidebar Token Reference
 
-The sidebar has its own token group because it is **always dark navy (`#1C2333`)** regardless of light/dark mode. Its variables are identical in both `:root` and `.dark`:
+The sidebar has its own token group. By default it is dark navy (`#1C2333`) in both light and dark modes. When **Glass Light** sidebar style is active (`.sidebar-glass` class on `<html>`), these tokens are overridden:
 
-| CSS Variable | Tailwind Class | Value | Used For |
-|---|---|---|---|
-| `--sidebar` | `bg-sidebar` | `#1C2333` navy | Sidebar panel background |
-| `--sidebar-foreground` | `text-sidebar-foreground` | slate-100 | Brand name, tenant name text |
-| `--sidebar-primary` | `bg-sidebar-primary` | blue-600 | (Same as --primary, available for sidebar use) |
-| `--sidebar-primary-foreground` | `text-sidebar-primary-foreground` | white | Text on sidebar primary elements |
-| `--sidebar-accent` | `bg-sidebar-accent` | white/5% | Hover background for nav items |
-| `--sidebar-accent-foreground` | `text-sidebar-accent-foreground` | slate-100 | Text on hovered sidebar items |
-| `--sidebar-border` | `bg-sidebar-border` / `border-sidebar-border` | white/8% | Horizontal dividers inside sidebar |
-| `--sidebar-ring` | `ring-sidebar-ring` | blue-600 | Focus rings inside sidebar |
+| CSS Variable | Tailwind Class | Default (Modern Dark) | Glass Light (Light Mode) | Glass Light (Dark Mode) |
+|---|---|---|---|---|
+| `--sidebar` | `bg-sidebar` | `#1C2333` navy | white/82% | slate-900/82% |
+| `--sidebar-foreground` | `text-sidebar-foreground` | slate-100 | slate-800 | slate-100 |
+| `--sidebar-primary` | `bg-sidebar-primary` | active palette primary | active palette primary | active palette primary |
+| `--sidebar-primary-foreground` | `text-sidebar-primary-foreground` | white | white | white |
+| `--sidebar-accent` | `bg-sidebar-accent` | white/5% | slate-200/70% | white/8% |
+| `--sidebar-accent-foreground` | `text-sidebar-accent-foreground` | slate-100 | slate-800 | slate-100 |
+| `--sidebar-border` | `border-sidebar-border` | white/8% | slate-200 | white/10% |
+| `--sidebar-ring` | `ring-sidebar-ring` | active palette primary | active palette primary | active palette primary |
 
-> **Why separate sidebar tokens?** The sidebar background is always `#1C2333` — a hardcoded inline style — regardless of theme. Generic tokens like `--accent` change between light/dark, but sidebar hover must always be `white/5%` (semi-transparent white on a dark bg). Sidebar-specific tokens guarantee that.
+> **Note:** `--sidebar-primary` and `--sidebar-ring` are no longer fixed to blue-600 — they track the active color palette via `style.setProperty` in `useTheme`.
+
+The sidebar `<aside>` uses `style={{ background: 'var(--sidebar)' }}` (reads the CSS variable) and has the `sidebar-panel` class so that `html.sidebar-glass .sidebar-panel` can apply `backdrop-filter: blur(12px)` for the frosted effect.
 
 ---
 
@@ -143,13 +145,56 @@ Since all color classes use CSS variables, switching the `.dark` class on `<html
 
 ---
 
+## Dynamic Theme System
+
+Beyond light/dark mode, the app supports runtime color palettes, interface density, and sidebar style. All state lives in `useTheme()` and is applied by mutating `<html>` — no component re-renders required.
+
+### Color Palettes (`src/config/themes.js`)
+
+Palettes only override the **primary/accent** token family. All other tokens (background, card, foreground, etc.) are controlled by light/dark mode.
+
+```js
+// src/config/themes.js
+export const COLOR_PALETTES = [
+  { id: 'ocean-blue',    name: 'Ocean Blue',    hex: '#2563eb', primary: 'oklch(...)', ring: 'oklch(...)' },
+  { id: 'emerald-green', name: 'Emerald Green', hex: '#10b981', primary: 'oklch(...)', ring: 'oklch(...)' },
+  // ...
+]
+```
+
+Applied via `document.documentElement.style.setProperty('--primary', p.primary)` etc. — the inline style overrides the `:root` CSS variable for the current session.
+
+**To add a palette:** append an entry to `COLOR_PALETTES` with a unique `id`, a display `name`, a plain CSS `hex` (for preview swatches), and OKLch values for `primary` and `ring`.
+
+### Interface Density
+
+Three CSS classes on `<html>` override `--radius`:
+
+```css
+.density-compact  { --radius: 0.375rem; }   /* tighter corners */
+.density-balanced { --radius: 0.625rem; }   /* default */
+.density-relaxed  { --radius: 0.875rem; }   /* more rounded */
+```
+
+### Sidebar Glass Light
+
+When `.sidebar-glass` is on `<html>`, all `--sidebar-*` variables are overridden to a translucent palette. The `html.dark.sidebar-glass` block handles the dark-mode variant automatically.
+
+```css
+html.sidebar-glass           { --sidebar: oklch(0.97 ... / 82%); /* near-white */ }
+html.dark.sidebar-glass      { --sidebar: oklch(0.208 ... / 82%); /* slate-900 */ }
+html.sidebar-glass .sidebar-panel { backdrop-filter: blur(12px); }
+```
+
+---
+
 ## Hardcoded vs. Semantic Colors
 
 A small set of colors are intentionally **not** mapped to CSS variables:
 
 | Element | Hardcoded Value | Why Not Semantic |
 |---|---|---|
-| Sidebar background | `style={{ background: '#1C2333' }}` | Fixed design decision — always dark navy, never changes with theme |
+| Sidebar background | `style={{ background: 'var(--sidebar)' }}` | Uses CSS variable — navy by default, overridden by Glass Light style via `html.sidebar-glass` |
 | Tenant avatar | `bg-slate-600 text-white` | Avatar/badge colors are data-driven, no theme token maps to this |
 | Dashboard status colors | `text-emerald-600`, `text-red-500`, `text-amber-600` | These express data meaning (profit/loss/warning), not UI theme |
 | Stat card icon bgs | `bg-emerald-50 dark:bg-emerald-900/20` etc. | Paired with status colors; separate from the UI theme |
@@ -167,12 +212,18 @@ A small set of colors are intentionally **not** mapped to CSS variables:
 
 ## Updating the Theme
 
-To restyle the entire application, **only edit `src/App.css`**:
+### Runtime (user-facing — no code change)
+Users control palette, density, and sidebar style via the **Settings → Appearance** page. All choices persist to `localStorage`.
 
-1. **Change primary color** — update `--primary` in `:root` (and optionally `.dark`)
-2. **Change card surface** — update `--card` in both blocks
-3. **Adjust page depth** — update `--background` (currently one shade darker than `--card` to create elevation)
-4. **Modify hover behavior** — update `--accent` / `--accent-foreground`
-5. **Change text contrast** — update `--foreground` and `--muted-foreground`
+### Developer — adding a new color palette
+Edit only `src/config/themes.js`. Add an entry to `COLOR_PALETTES` with `id`, `name`, `hex`, `primary`, and `ring`. No CSS or component changes required.
+
+### Developer — changing base light/dark palette
+Edit `src/App.css`:
+
+1. **Change card surface** — update `--card` in `:root` and `.dark`
+2. **Adjust page depth** — update `--background`
+3. **Modify hover behavior** — update `--accent` / `--accent-foreground`
+4. **Change text contrast** — update `--foreground` and `--muted-foreground`
 
 No component files need to change. All components consume values through the semantic class chain.
