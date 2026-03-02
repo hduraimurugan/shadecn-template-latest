@@ -18,6 +18,28 @@ This is the **master index** for the design system. Every section links to a ded
 
 ---
 
+## Update Protocol
+
+When asked to **update DESIGN_SYSTEM.md**:
+
+1. **Identify scope** — determine which `docs/` files are affected by the change (file moves, new components, renamed tokens, etc.).
+2. **Update `docs/` files first** — fix all references (file paths, section headings, file trees) in every relevant doc file.
+3. **Update DESIGN_SYSTEM.md** — reflect the same changes here (file tree, quick-reference tables, links).
+4. **If only DESIGN_SYSTEM.md is affected** (e.g. a quick-reference table tweak, adding a note) — update only this file.
+
+Files that commonly need syncing together:
+
+| Change type | Files to update |
+|---|---|
+| Page/component moved or renamed | `DESIGN_SYSTEM.md` file tree · `docs/architecture.md` file tree · `docs/page-components.md` or relevant doc section heading |
+| New page added | Same as above + add entry to `docs/page-components.md` |
+| New component added | `DESIGN_SYSTEM.md` file tree · `docs/architecture.md` · `docs/common-components.md` or `docs/ui-components.md` |
+| New route added | `docs/architecture.md` (nav/route section) |
+| New color palette or token | `DESIGN_SYSTEM.md` token tables · `docs/theming.md` |
+| New sidebar style or density option | `DESIGN_SYSTEM.md` dynamic theme table · `docs/theming.md` |
+
+---
+
 ## Quick Reference
 
 ### Key Principle
