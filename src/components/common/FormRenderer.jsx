@@ -105,18 +105,22 @@ function SelectField({ field, control, error }) {
         name={field.key}
         control={control}
         render={({ field: controllerField }) => (
-          <Select value={controllerField.value ?? ""} onValueChange={controllerField.onChange}>
-            <SelectTrigger className="w-full" aria-invalid={!!error}>
-              <SelectValue placeholder={field.placeholder ?? `Select ${field.label.toLowerCase()}`} />
-            </SelectTrigger>
-            <SelectContent>
-              {field.options?.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          // Wrapper div ensures the trigger stretches full width regardless of
+          // how SelectPrimitive.Root renders its root element (inline vs block)
+          <div className="w-full">
+            <Select value={controllerField.value ?? ""} onValueChange={controllerField.onChange}>
+              <SelectTrigger className="w-full" aria-invalid={!!error}>
+                <SelectValue placeholder={field.placeholder ?? `Select ${field.label.toLowerCase()}`} />
+              </SelectTrigger>
+              <SelectContent>
+                {field.options?.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         )}
       />
     </FieldWrapper>
@@ -182,8 +186,10 @@ function FormRenderer({
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-0">
-      <div className="flex-1 overflow-y-auto px-6 py-5">
+    // flex-1 + min-h-0 lets the form fill remaining drawer height as a flex child
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex-1 flex flex-col min-h-0">
+      {/* Scrollable content area */}
+      <div className="flex-1 overflow-y-auto min-h-0 px-6 py-5">
         <div className="grid grid-cols-2 gap-x-4 gap-y-5">
           {fields.map((field) => (
             <div
@@ -196,6 +202,7 @@ function FormRenderer({
         </div>
       </div>
 
+      {/* Fixed footer — always pinned at the bottom of the drawer */}
       <div className="border-t border-border bg-muted/50 px-6 py-4 flex items-center justify-end gap-2 shrink-0">
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
