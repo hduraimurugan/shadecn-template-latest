@@ -1,4 +1,4 @@
-import { IconDots, IconEye, IconEdit, IconTrash, IconChevronRight } from "@tabler/icons-react"
+import { IconEye, IconPencil, IconTrash, IconChevronRight } from "@tabler/icons-react"
 import {
   Table,
   TableHeader,
@@ -7,13 +7,6 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table"
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 
 function TableRenderer({ columns, data, onView, onEdit, onDelete, onRowClick, startIndex = 1 }) {
@@ -38,7 +31,7 @@ function TableRenderer({ columns, data, onView, onEdit, onDelete, onRowClick, st
             <TableHead key={col.key}>{col.label}</TableHead>
           ))}
           {hasActions && (
-            <TableHead className="w-14 text-right pr-4">Actions</TableHead>
+            <TableHead className="w-32 text-right pr-4">Actions</TableHead>
           )}
           {hasRowClick && <TableHead className="w-10" />}
         </TableRow>
@@ -60,39 +53,39 @@ function TableRenderer({ columns, data, onView, onEdit, onDelete, onRowClick, st
             ))}
             {hasActions && (
               <TableCell className="text-right pr-3">
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    render={<Button variant="ghost" size="icon-xs" className="opacity-0 group-hover:opacity-100 transition-opacity" />}
-                  >
-                    <IconDots size={15} />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" sideOffset={6}>
-                    {onView && (
-                      <DropdownMenuItem onClick={() => onView(row)}>
-                        <IconEye size={15} />
-                        View details
-                      </DropdownMenuItem>
-                    )}
-                    {onEdit && (
-                      <DropdownMenuItem onClick={() => onEdit(row)}>
-                        <IconEdit size={15} />
-                        Edit
-                      </DropdownMenuItem>
-                    )}
-                    {onDelete && (
-                      <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          variant="destructive"
-                          onClick={() => onDelete(row)}
-                        >
-                          <IconTrash size={15} />
-                          Delete
-                        </DropdownMenuItem>
-                      </>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {onView && (
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      title="View details"
+                      onClick={(e) => { e.stopPropagation(); onView(row) }}
+                    >
+                      <IconEye size={15} />
+                    </Button>
+                  )}
+                  {onEdit && (
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      title="Edit"
+                      onClick={(e) => { e.stopPropagation(); onEdit(row) }}
+                    >
+                      <IconPencil size={15} />
+                    </Button>
+                  )}
+                  {onDelete && (
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      title="Delete"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={(e) => { e.stopPropagation(); onDelete(row) }}
+                    >
+                      <IconTrash size={15} />
+                    </Button>
+                  )}
+                </div>
               </TableCell>
             )}
             {hasRowClick && (

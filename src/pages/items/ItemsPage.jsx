@@ -15,6 +15,7 @@ import {
 import { TableRenderer } from "@/components/common/TableRenderer"
 import { ItemDetailDrawer } from "@/components/common/ItemDetailDrawer"
 import { Pagination } from "@/components/common/Pagination"
+import { ItemFormDrawer } from "@/pages/items/components/ItemFormDrawer"
 import { mockItems } from "@/data/mockItems"
 
 const PAGE_SIZE = 10
@@ -72,6 +73,8 @@ export default function ItemsPage() {
   const [selectedItem, setSelectedItem] = useState(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [formDrawerOpen, setFormDrawerOpen] = useState(false)
+  const [editItem, setEditItem] = useState(null)
 
   const totalItems = items.length
   const paginatedItems = items.slice(
@@ -84,8 +87,30 @@ export default function ItemsPage() {
     setDrawerOpen(true)
   }
 
-  const handleEdit = () => {
-    // Placeholder — no function yet
+  const handleEdit = (item) => {
+    setEditItem(item)
+    setFormDrawerOpen(true)
+  }
+
+  const handleCreate = () => {
+    setEditItem(null)
+    setFormDrawerOpen(true)
+  }
+
+  const handleFormSave = (data) => {
+    if (editItem) {
+      // Edit mode — replace matching item
+      setItems((prev) =>
+        prev.map((i) => (i.id === editItem.id ? { ...editItem, ...data } : i))
+      )
+    } else {
+      // Create mode — generate new id and prepend
+      const newId = items.length > 0 ? Math.max(...items.map((i) => i.id)) + 1 : 1
+      setItems((prev) => [{ id: newId, ...data }, ...prev])
+      setCurrentPage(1)
+    }
+    setFormDrawerOpen(false)
+    setEditItem(null)
   }
 
   const handleDelete = (item) => {
@@ -110,7 +135,7 @@ export default function ItemsPage() {
             Manage your products master details.
           </p>
         </div>
-        <Button>
+        <Button onClick={handleCreate}>
           <IconPlus size={16} />
           Create Item
         </Button>
@@ -139,6 +164,14 @@ export default function ItemsPage() {
         item={selectedItem}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
+      />
+
+      {/* Create / Edit Item Drawer */}
+      <ItemFormDrawer
+        open={formDrawerOpen}
+        onClose={() => { setFormDrawerOpen(false); setEditItem(null) }}
+        item={editItem}
+        onSave={handleFormSave}
       />
 
       {/* Delete Confirmation Dialog */}
