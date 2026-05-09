@@ -11,7 +11,7 @@ This is the **master index** for the design system. Every section links to a ded
 | [docs/architecture.md](./docs/architecture.md) | Project structure, file map, navigation config (`nav.js`), icon conventions, adding routes |
 | [docs/theming.md](./docs/theming.md) | `App.css` CSS variables, `@theme inline` bridge, color token reference, sidebar tokens, dark mode mechanism, dynamic palette/density/sidebar-style system, hardcoded vs. semantic colors, updating the theme |
 | [docs/layout-components.md](./docs/layout-components.md) | `AppLayout`, `TopBar`, `Sidebar` — token usage for every element |
-| [docs/page-components.md](./docs/page-components.md) | Base page pattern, `DashboardPage`, `ItemsPage` (data table pattern), `SettingsPage` (appearance & theme UI), column definition patterns |
+| [docs/page-components.md](./docs/page-components.md) | Base page pattern, `LoginPage`, `DashboardPage`, `ItemsPage` (data table pattern), `SettingsPage` (appearance & theme UI), column definition patterns |
 | [docs/ui-components.md](./docs/ui-components.md) | `DropdownMenu`, `Table`, `Drawer` — low-level primitives in `src/components/ui/` |
 | [docs/common-components.md](./docs/common-components.md) | `TableRenderer`, `Pagination`, `ItemDetailDrawer`, `TabRenderer`, `StockLevelBar` — high-level reusable blocks |
 | [docs/inventory-module.md](./docs/inventory-module.md) | `InventoryPage`, `ProductDetailPage`, `ProductImageGallery`, `StockMovementsTable`, `LinkedInvoicesTable`, `BatchReportDrawer`, `StockDistributionChart`, mock data shapes |
@@ -62,6 +62,7 @@ src/
 │   ├── TopBar.jsx
 │   └── Sidebar.jsx
 ├── components/
+│   ├── ProtectedRoute.jsx           ← Authentication guard
 │   ├── ui/                          ← Low-level primitives
 │   │   ├── dropdown-menu.jsx
 │   │   ├── table.jsx
@@ -76,6 +77,7 @@ src/
 │   ├── mockItems.js                 ← Items page mock data (replace with API)
 │   └── mockInventory.js             ← Inventory module mock data (replace with API)
 └── pages/
+    ├── LoginPage.jsx                ← High-impact split-panel login
     ├── DashboardPage.jsx
     ├── SettingsPage.jsx             ← Appearance & Theme Settings UI
     ├── items/

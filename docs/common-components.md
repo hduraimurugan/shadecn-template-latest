@@ -42,18 +42,29 @@ The actions column is **only rendered** when at least one of `onView`, `onEdit`,
 - Displays `startIndex + rowIndex` using `tabular-nums` for alignment
 - Updates correctly across pages when `startIndex` is set
 
-### Action Menu (dropdown mode)
+### Inline Action Buttons
 
-When action callbacks are provided, each row renders a three-dot (`⋯`) ghost icon button in the rightmost column. The button is **invisible by default** and fades in on row hover (`opacity-0 group-hover:opacity-100`). Clicking it opens a `DropdownMenu`:
+When action callbacks are provided, each row renders **three inline ghost icon buttons** in the rightmost column. The buttons are **invisible by default** and fade in together on row hover (`opacity-0 group-hover:opacity-100`):
 
-| Menu Item | Icon | Variant | Condition |
+| Button | Icon | Style | Condition |
 |---|---|---|---|
-| View details | `IconEye` | default | `onView` provided |
-| Edit | `IconEdit` | default | `onEdit` provided |
-| *(separator)* | — | — | `onDelete` provided |
-| Delete | `IconTrash` | destructive | `onDelete` provided |
+| View details | `IconEye` | `ghost` | `onView` provided |
+| Edit | `IconPencil` | `ghost` | `onEdit` provided |
+| Delete | `IconTrash` | `ghost` + `text-destructive hover:bg-destructive/10` | `onDelete` provided |
 
-> **Delete is visually separated** from View/Edit by a `DropdownMenuSeparator` to reduce accidental clicks on a destructive action.
+All three buttons are wrapped in a `flex items-center gap-0.5` container so they sit side-by-side. Only the buttons whose callbacks are provided are rendered.
+
+```jsx
+// Delete button receives a destructive tint so it's visually distinct from View/Edit
+<Button
+  variant="ghost"
+  size="icon-xs"
+  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+  onClick={(e) => { e.stopPropagation(); onDelete(row) }}
+>
+  <IconTrash size={15} />
+</Button>
+```
 
 ### Row Click Mode (`onRowClick`)
 
@@ -86,10 +97,12 @@ Try adjusting your filters or add a new item.
 | Header row | `bg-muted/40 hover:bg-muted/40` | Subtle tint, hover disabled to keep header static |
 | Header `#` cell | `w-12 text-center` | Fixed-width serial column |
 | Data `#` cell | `w-12 text-center text-muted-foreground tabular-nums` | Dimmed, monospaced digits |
-| Row (dropdown mode) | `group` | Enables `group-hover` on the action button |
+| Row (action mode) | `group` | Enables `group-hover` on the action buttons |
 | Row (click mode) | `group cursor-pointer` | Full row is clickable |
-| Action trigger | `opacity-0 group-hover:opacity-100 transition-opacity` | Hidden until row is hovered |
-| Actions column header | `w-14 text-right pr-4` | Right-aligned, narrow |
+| Action buttons wrapper | `opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5` | All three buttons fade in together on row hover |
+| View / Edit buttons | `Button variant="ghost" size="icon-xs"` | Standard ghost |
+| Delete button | `Button variant="ghost" size="icon-xs" className="text-destructive hover:text-destructive hover:bg-destructive/10"` | Red-tinted destructive ghost |
+| Actions column header | `w-32 text-right pr-4` | Right-aligned, wide enough for 3 buttons |
 | Chevron column | `w-10` | Narrow trailing column in row-click mode |
 
 ---
@@ -233,6 +246,130 @@ DrawerContent
 2. Update the `fields` array with the new entity's keys and labels
 3. Adjust the image handling if the entity has no image
 4. Keep the same `Drawer` + `DrawerContent` structure — only the body content changes
+
+---
+
+## FormRenderer (`src/components/common/FormRenderer.jsx`)
+
+A fully dynamic form renderer driven by a **field definition array**. Generates both the UI and the Zod validation schema at runtime from the same schema — no separate schema object needed. Designed to be embedded inside a `Drawer` (or any container) to build Create and Edit flows.
+
+**Dependencies:** `react-hook-form`, `zod`, `@hookform/resolvers`
+
+### Props
+
+| Prop | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `fields` | `Field[]` | ✓ | — | Array of field definitions (see below) |
+| `defaultValues` | `object` | | `{}` | Pre-filled values — pass the item object in edit mode, empty/partial object for create mode |
+| `onSubmit` | `(data) => void` | ✓ | — | Called with the validated form data when the form is submitted successfully |
+| `onCancel` | `() => void` | | — | Called when the Cancel button is clicked; omit to hide the Cancel button |
+| `submitLabel` | `string` | | `"Save"` | Label for the submit button (e.g. `"Create Item"`, `"Save Changes"`) |
+| `isLoading` | `boolean` | | `false` | Disables both buttons and shows `"Saving…"` on the submit button |
+
+### Field Definition (`Field`)
+
+```ts
+{
+  key: string           // maps to the form value key and the data object key
+  label: string         // displayed above the field; also used in error messages
+  type: "text" | "number" | "select" | "textarea"
+  placeholder?: string  // falls back to "Enter {label}" or "Select {label}"
+  required?: boolean    // adds .min(1) (text) or .min(0) (number) to the Zod rule
+  options?: { label: string; value: string }[]  // required for type="select"
+  description?: string  // helper text shown below the field (hidden when error shows)
+  colSpan?: "full" | "half"  // "half" is default — fits 2 per row in the grid
+}
+```
+
+### Zod Schema Auto-generation
+
+`buildZodSchema(fields)` iterates the `fields` array and builds a `z.object({...})` shape:
+
+| Field type | Zod rule | When `required: true` |
+|---|---|---|
+| `text` / `select` / `textarea` | `z.string()` | `.min(1, "{label} is required")` |
+| `number` | `z.coerce.number()` | `.min(0, "{label} is required")` |
+
+`z.coerce.number()` is used for number fields so that `<input type="number">` string values are automatically coerced before validation.
+
+### Layout
+
+- **2-column grid** (`grid grid-cols-2 gap-x-4 gap-y-5`) — fields default to `col-span-1`
+- `colSpan: "full"` → `col-span-2` — spans both columns (use for names, URLs, textareas)
+- Scrollable content area: `flex-1 overflow-y-auto min-h-0` inside the form's `flex-col`
+- **Pinned footer**: the Cancel + Submit button row is `shrink-0` at the bottom, always visible even when content scrolls
+
+### Inline Validation
+
+Errors are displayed **inline under each field** using `FieldWrapper`:
+- Label turns `text-destructive` when the field has an error
+- The native `aria-invalid` attribute is set to `true` — Input/Select/Textarea already style themselves with a red ring via `aria-invalid:border-destructive aria-invalid:ring-3`
+- Error message: `text-xs text-destructive font-medium`
+- Description (helper text) is **hidden** when an error is shown for the same field
+
+### Usage
+
+```jsx
+import { FormRenderer } from "@/components/common/FormRenderer"
+
+const FIELDS = [
+  { key: "name",     label: "Name",     type: "text",   required: true, colSpan: "full" },
+  { key: "category", label: "Category", type: "select", required: true, colSpan: "half",
+    options: [{ label: "Electronics", value: "Electronics" }, ...] },
+  { key: "price",    label: "Price",    type: "number", required: true, colSpan: "half" },
+]
+
+// Create mode
+<FormRenderer
+  fields={FIELDS}
+  onSubmit={(data) => console.log(data)}
+  onCancel={() => setOpen(false)}
+  submitLabel="Create Item"
+/>
+
+// Edit mode — pass defaultValues to pre-fill
+<FormRenderer
+  key={item.id}        // ← key forces re-mount so defaultValues reset when item changes
+  fields={FIELDS}
+  defaultValues={item}
+  onSubmit={(data) => handleSave(data)}
+  onCancel={() => setOpen(false)}
+  submitLabel="Save Changes"
+/>
+```
+
+> **`key` is critical in edit mode** — without it, `useForm` holds the previous item's values even when `defaultValues` changes. Pass `key={item.id}` (or `key={item?.id ?? "create"}`) on the `FormRenderer` to force a fresh mount.
+
+### Supported Field Types
+
+| Type | Component Used | Notes |
+|---|---|---|
+| `text` | `Input type="text"` | Standard single-line text |
+| `number` | `Input type="number"` | Value coerced to number by Zod |
+| `select` | `Select` + `Controller` | Requires `options` array; `Controller` bridges react-hook-form ↔ base-ui Select |
+| `textarea` | `Textarea` | `rows={3}`, field-sizing-content grows with content |
+
+### Extending with New Field Types
+
+To add a new field type (e.g. `"date"`, `"checkbox"`):
+
+1. Add a new renderer function (e.g. `DateField`) following the `FieldWrapper` pattern
+2. Add a `case` to the `switch` inside `renderField()`
+3. Add the Zod rule to `buildZodSchema()` for the new type
+
+### Token Summary
+
+| Element | Class | Notes |
+|---|---|---|
+| Form container | `flex-1 flex flex-col min-h-0` | Fills remaining drawer height; `min-h-0` enables shrinking |
+| Scroll area | `flex-1 overflow-y-auto min-h-0 px-6 py-5` | Fields scroll independently |
+| Field grid | `grid grid-cols-2 gap-x-4 gap-y-5` | 2 columns, configurable via `colSpan` |
+| Field wrapper | `flex flex-col gap-1.5` | Label + input + error stacked |
+| Label (normal) | `text-sm font-medium` (via `Label`) | Via `Label` component |
+| Label (error) | `text-destructive` added to Label | Red when field has error |
+| Error message | `text-xs text-destructive font-medium` | Shown below the input |
+| Description | `text-xs text-muted-foreground` | Hidden when error is present |
+| Footer | `border-t border-border bg-muted/50 px-6 py-4 shrink-0` | Always pinned at bottom |
 
 ---
 

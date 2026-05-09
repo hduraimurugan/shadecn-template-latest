@@ -25,12 +25,13 @@ config/nav.js  ──►  MAIN_NAV, SYSTEM_NAV, USER_MENU_GROUPS, ROUTE_LABELS
     └──►  TopBar.jsx   (breadcrumb labels + user menu)
 
 src/components/
+    ├── ProtectedRoute.jsx  ──►  Authentication guard for all internal routes
     ├── ui/          ──►  Low-level primitives (Button, Table, Drawer, Badge, etc.)
     │                     Thin wrappers over Base UI / native HTML with design tokens
     │
     └── common/      ──►  High-level reusable blocks
                           TableRenderer, Pagination, ItemDetailDrawer,
-                          TabRenderer, StockLevelBar
+                          FormRenderer, TabRenderer, StockLevelBar
 
 src/data/
     ├── mockItems.js       ──►  Mock data for Items page — replace with API calls
@@ -40,7 +41,9 @@ src/pages/
     ├── DashboardPage.jsx
     ├── SettingsPage.jsx        ──►  Appearance & Theme Settings (palette, density, sidebar style)
     ├── items/                  ──►  Items module (feature-based folder)
-    │   └── ItemsPage.jsx
+    │   ├── ItemsPage.jsx
+    │   └── components/         ──►  Module-private components
+    │       └── ItemFormDrawer.jsx    ──►  Create/Edit right-side drawer (uses FormRenderer)
     └── inventory/              ──►  Inventory module (feature-based folder)
         ├── InventoryPage.jsx
         ├── ProductDetailPage.jsx

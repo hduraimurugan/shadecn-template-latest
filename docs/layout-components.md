@@ -2,7 +2,12 @@
 
 ## AppLayout (`src/layouts/AppLayout.jsx`)
 
-Provides the full-viewport shell: sidebar + right column (topbar + main).
+Provides the full-viewport shell: sidebar + right column (topbar + main). It acts as the state controller for navigation chrome.
+
+### State Management
+
+- **Sidebar Collapse**: Managed via `collapsed` state. This is **persisted to `localStorage`** as `sidebar-collapsed`, so the user's preference is remembered across refreshes.
+- **Mobile Menu**: Managed via `mobileOpen` state. Triggered by the hamburger button in `TopBar` and closed via the overlay backdrop or close button in `Sidebar`.
 
 ```jsx
 <main className="flex-1 overflow-y-auto bg-background p-6">
@@ -22,43 +27,67 @@ The slight shade difference between `bg-background` (content area) and `bg-card`
 
 The sticky header bar at the top of the right column.
 
+### Components
+
+- **Breadcrumb**: Automatically derives page labels from the current route using `ROUTE_LABELS`.
+- **SearchBar**: A centered search input with a decorative `⌘K` keyboard shortcut hint.
+- **BellButton**: A notification dropdown that displays a list of unread alerts (orders, invoices, etc.) with a red notification dot on the trigger.
+- **ThemeSwitch**: Toggles between light and dark modes via `useTheme()`.
+- **UserProfileDropdown**: A duplicate of the sidebar user menu, shown in the header for quick access.
+
+### Token Summary
+
 | Element | Classes Used | Purpose |
 |---|---|---|
 | Header `<header>` | `bg-card border-border` | Matches card surface, separated by border from content |
 | Hamburger button | `text-muted-foreground hover:bg-accent` | Muted icon, slate hover |
-| Breadcrumb home | `text-muted-foreground hover:text-foreground` | Dimmed until hovered |
-| Breadcrumb current | `text-foreground` | Full-contrast current page label |
-| Search icon | `text-muted-foreground` | Dimmed magnifier |
-| Search input | `bg-muted border-border text-foreground placeholder:text-muted-foreground focus:ring-ring/30` | Muted bg, standard text, ring on focus |
+| Breadcrumb current | `text-foreground font-semibold` | Full-contrast current page label |
+| Search input | `bg-muted border-border text-foreground` | Muted bg, standard text |
 | Keyboard shortcut `<kbd>` | `bg-card border-border text-muted-foreground` | Card-level badge |
-| Bell button | `bg-card border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground` | Icon button |
-| Notification dot | `bg-red-500 ring-card` | Hardcoded red (semantic `bg-destructive` would also work), ring matches card bg |
-| Theme toggle | `bg-card border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground` | Icon button |
+| Notification dot | `bg-red-500 ring-card` | Hardcoded red; ring matches card bg |
 | Profile trigger | `bg-card border-border hover:bg-accent` | Dropdown trigger |
-| User name | `text-foreground` | Primary text weight |
-| User role / chevron | `text-muted-foreground` | Dimmed secondary text |
-| Log out item | `text-destructive` | Red-600 (light) / red-400 (dark) |
+| Profile avatar | `from-violet-400 to-indigo-600` | Matches sidebar avatar style |
 
 ---
 
 ## Sidebar (`src/layouts/Sidebar.jsx`)
 
-Always rendered with a hardcoded dark navy background (`style={{ background: '#1C2333' }}`), so it appears identical in both light and dark modes. All internal colors use sidebar-specific tokens or `text-muted-foreground` (which is slate-500/slate-400 — readable on dark navy in both modes).
+The sidebar supports a **collapsible desktop mode** and a **mobile overlay mode**. It uses the `--sidebar` CSS variable for its background, which defaults to dark navy but switches to translucent glass in the "Glass Light" style.
 
-| Element | Classes Used | Purpose |
+### States & Behavior
+
+| State | Trigger | Appearance |
 |---|---|---|
-| Logo badge | `bg-primary text-primary-foreground` | Blue-600 badge, white letter "A" |
-| Brand name | `text-sidebar-foreground` | slate-100 — full contrast on dark navy |
-| Brand subtitle | `text-muted-foreground` | slate-500/slate-400 — dimmed |
-| Section labels ("Main Menu", "System") | `text-muted-foreground` | Dimmed category headers |
-| Active nav item | `bg-primary text-primary-foreground` | Blue-600 fill, white text |
-| Active nav icon | `text-primary-foreground` | White icon |
-| Inactive nav item | `text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground` | Dimmed, white-5% hover bg |
-| Inactive nav icon | `text-muted-foreground group-hover:text-sidebar-foreground` | Becomes brighter on row hover |
-| Collapse / close buttons | `text-muted-foreground hover:bg-white/10 hover:text-sidebar-foreground` | White-10% hover (slightly more visible than nav items) |
-| Horizontal divider | `bg-sidebar-border` | white/8% hairline |
-| Bottom border | `border-sidebar-border` | white/8% hairline |
-| Tenant button | `text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground` | Same pattern as nav items |
-| Tenant name | `text-sidebar-foreground` | Full contrast |
-| Tenant subtitle / chevron | `text-muted-foreground` | Dimmed |
-| Tenant avatar badge | `bg-slate-600 text-white` | Hardcoded — no semantic token for avatar colors |
+| **Expanded** | Default / `collapsed=false` | 210px wide, shows labels, section headers, and full user profile |
+| **Collapsed** | `onToggle()` click | 56px wide, icons only, user profile becomes a circular avatar only |
+| **Mobile Overlay** | `mobileOpen=true` | Slides in from left on top of a blurred backdrop; always expanded |
+| **Logo Swap** | Hover on collapsed logo | The "A" brand mark swaps for a `IconLayoutSidebar` icon to indicate it can be expanded |
+
+### Profile Dropdown (`DropdownMenu`)
+
+The user profile at the bottom is a `DropdownMenu` trigger. Since it sits inside the sidebar (which can be navy or glass), the dropdown content uses **local CSS variable overrides** to ensure it always matches the sidebar's aesthetic.
+
+```jsx
+<DropdownMenuContent
+  style={{
+    '--popover':            'var(--sidebar-popover)',
+    '--popover-foreground': 'var(--sidebar-popover-foreground)',
+    // ... other local tokens
+  }}
+>
+```
+
+### Token Summary
+
+| Element | Class / Style | Purpose |
+|---|---|---|
+| Panel container | `style={{ background: 'var(--sidebar)' }}` | Reads theme-controlled background variable |
+| Brand mark | `bg-primary text-primary-foreground` | Blue-600 badge, white letter "A" (swaps on hover) |
+| Nav item (active) | `bg-primary text-primary-foreground` | Blue-600 fill, white text/icon |
+| Nav item (inactive)| `text-sidebar-foreground-muted hover:bg-sidebar-accent` | slate-100/50% text, 5% white hover bg |
+| Section label | `text-sidebar-foreground-muted uppercase` | Dimmed category headers; hidden when collapsed |
+| User avatar | `from-violet-400 to-indigo-600` | Hardcoded gradient for identity |
+| Profile trigger | `border-sidebar-border bg-sidebar-accent/40` | Subtle border and tinted background |
+| Divider / Border | `bg-sidebar-border` | white/8% hairline |
+| Backdrop (mobile) | `bg-black/50 backdrop-blur-sm` | Muted overlay behind mobile sidebar |
+
